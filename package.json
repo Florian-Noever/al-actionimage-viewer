@@ -8,12 +8,12 @@
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/der-floh/al-actionimage-viewer.git"
+    "url": "https://github.com/FlorianNoeverGOB/al-actionimage-viewer.git"
   },
   "bugs": {
-    "url": "https://github.com/der-floh/al-actionimage-viewer/issues"
+    "url": "https://github.com/FlorianNoeverGOB/al-actionimage-viewer/issues"
   },
-  "homepage": "https://github.com/der-floh/al-actionimage-viewer",
+  "homepage": "https://github.com/FlorianNoeverGOB/al-actionimage-viewer",
   "keywords": [
     "AL",
     "Business Central",
