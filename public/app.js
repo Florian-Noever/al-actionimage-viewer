@@ -230,7 +230,6 @@ function clamp(v, lo, hi) {
 
 function applyZoom(newZoom) {
     // Clamp and short-circuit
-    const ZOOM_MIN = 0.75, ZOOM_MAX = 2.0;
     newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +newZoom));
     if (newZoom === zoom) {
         return;
