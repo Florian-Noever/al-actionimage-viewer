@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        img-src data: blob:;
+        style-src %CSP_SOURCE%;
+        script-src 'nonce-%NONCE%';
+        clipboard-write 'self';
+      " />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Action Image Viewer</title>
+    <link rel="stylesheet" href="%STYLE_URI%" />
+</head>
+
+<body>
+    <div class="root">
+        <aside class="rail">
+            <h3>Categories</h3>
+            <div id="radioRoot" role="radiogroup" aria-label="Image Categories"></div>
+        </aside>
+
+        <main class="content">
+            <div class="header">
+                <div class="title" id="catTitle">All Images</div>
+                <div class="count" id="count"></div>
+
+                <div class="search">
+                    <input id="searchInput" type="text" placeholder='Search (supports *, "exact")'
+                        aria-label="Search images" spellcheck="false" />
+                    <button id="searchClear" title="Clear search" aria-label="Clear search">✕</button>
+                </div>
+
+                <div class="zoom">
+                    <button id="zoomOut" title="Zoom Out (Ctrl+-)" aria-label="Zoom Out">−</button>
+                    <input id="zoomSlider" type="range" min="40" max="200" step="5" value="100" aria-label="Zoom Level">
+                    <button id="zoomIn" title="Zoom In (Ctrl+=)" aria-label="Zoom In">+</button>
+                    <span id="zoomPct" class="zoomPct">100%</span>
+                </div>
+
+                <button id="reloadBtn" class="reload" title="Reload (F5)" aria-label="Reload">⟳</button>
+
+                <div id="loadingPane" class="status-pane loading" aria-live="polite" hidden>
+                    <div class="spinner" aria-hidden="true"></div>
+                    <div class="status-text">Loading images…</div>
+                </div>
+
+                <div id="errorPane" class="status-pane error" role="alert" hidden>
+                    <div class="status-icon">⚠️</div>
+                    <div class="status-text" id="errorText">Something went wrong.</div>
+                    <button id="retryBtn" class="retry">Retry</button>
+                </div>
+            </div>
+
+            <div id="scroller">
+                <div class="spacer" id="spacer"></div>
+                <div class="layer" id="layer"></div>
+            </div>
+
+            <div id="contextMenu" class="ctxmenu" role="menu" aria-hidden="true">
+                <button class="ctxitem" data-action="copy-name" role="menuitem">Copy Name</button>
+                <button class="ctxitem" data-action="copy-image" role="menuitem">Copy Image</button>
+                <button class="ctxitem" data-action="export-image" role="menuitem">Export Image</button>
+            </div>
+        </main>
+    </div>
+
+    <script nonce="%NONCE%" src="%APP_URI%"></script>
+</body>
+
+</html>
