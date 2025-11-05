@@ -2,13 +2,14 @@
   "name": "al-actionimage-viewer",
   "displayName": "AL ActionImage Viewer",
   "description": "View, Search and Copy AL Action Images",
-  "version": "0.0.1",
-  "publisher": "der-floh",
+  "version": "0.1.0",
+  "publisher": "florian-noever",
+  "author": "Florian Noever",
   "license": "MIT",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Florian-Noever/al-actionimage-viewer.git"
+    "url": "https://github.com/Florian-Noever/al-actionimage-viewer"
   },
   "bugs": {
     "url": "https://github.com/Florian-Noever/al-actionimage-viewer/issues"
