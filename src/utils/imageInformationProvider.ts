@@ -1,13 +1,22 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { readFromBridgeStdout } from './binaryReader';
 import { ImageInformation } from '../types/imageInformationDTO';
 
-function platformFolder(): 'win32' | 'linux' | 'darwin' {
+enum Platform {
+    Windows = 'win32',
+    Linux = 'linux',
+    MacOS = 'darwin'
+}
+
+function platformFolder(): Platform {
     switch (process.platform) {
         case 'win32':
+            return Platform.Windows;
         case 'linux':
+            return Platform.Linux;
         case 'darwin':
-            return process.platform;
+            return Platform.MacOS;
         default:
             throw new Error(`Unsupported platform: ${process.platform}`);
     }
@@ -16,7 +25,7 @@ function platformFolder(): 'win32' | 'linux' | 'darwin' {
 function getImageInfoProviderPath(context: vscode.ExtensionContext): string {
     const folder = platformFolder();
     const file =
-        folder === 'win32'
+        folder === Platform.Windows
             ? 'AL-ActionImage-Viewer.ImageInformationProvider.exe'
             : 'AL-ActionImage-Viewer.ImageInformationProvider';
 
@@ -26,5 +35,11 @@ function getImageInfoProviderPath(context: vscode.ExtensionContext): string {
 
 export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformation[]>> {
     const path = getImageInfoProviderPath(context);
+
+    // Ensure the binary is executable on non-Windows platforms
+    if (process.platform !== 'win32') {
+        fs.chmodSync(path, 0o755); // +x
+    }
+
     return await readFromBridgeStdout(path);
 }

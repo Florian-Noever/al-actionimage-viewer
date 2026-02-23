@@ -5,6 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>AL_ActionImage_Viewer.ImageInformationProvider</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
   </PropertyGroup>

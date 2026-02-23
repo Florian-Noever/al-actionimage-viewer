@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AL_ActionImage_Viewer.ImageInformationProvider.Extensions;
+﻿namespace AL_ActionImage_Viewer.ImageInformationProvider.Extensions;
 
 public static class DictionaryExtensions
 {
