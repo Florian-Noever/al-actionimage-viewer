@@ -3,8 +3,7 @@
   "displayName": "AL ActionImage Viewer",
   "description": "View, Search and Copy AL Action Images",
   "version": "0.1.0",
-  "publisher": "florian-noever",
-  "author": "Florian Noever",
+  "publisher": "Florian-Noever",
   "license": "MIT",
   "icon": "assets/icon.png",
   "repository": {
@@ -23,7 +22,6 @@
     "Actions",
     "Icons",
     "Viewer",
-    "Microsoft",
     "AL Language"
   ],
   "engines": {

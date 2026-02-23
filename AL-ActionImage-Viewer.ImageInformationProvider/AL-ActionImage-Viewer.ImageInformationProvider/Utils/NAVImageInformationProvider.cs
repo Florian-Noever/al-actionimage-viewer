@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using AL_ActionImage_Viewer.ImageInformationProvider.Data;
@@ -32,12 +28,15 @@ public static class NAVImageInformationProvider
         if (!Directory.Exists(vscodeExtensionsFolder))
             return null;
         var extensions = Directory.GetDirectories(vscodeExtensionsFolder);
-        var alExtensionPath = extensions.Where(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)).FirstOrDefault() ?? string.Empty;
+        var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)) ?? string.Empty;
         var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win32", "Microsoft.Dynamics.Nav.CodeAnalysis.dll");
+        if (!File.Exists(codeAnalysisDll))
+            codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win64", "Microsoft.Dynamics.Nav.CodeAnalysis.dll");
+
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
 
-    private static IEnumerable<ImageInformationDTO> GetImagesLocal(string methodName)
+    private static List<ImageInformationDTO> GetImagesLocal(string methodName)
     {
         var imagesList = new List<ImageInformationDTO>();
 
@@ -140,7 +139,7 @@ public static class NAVImageInformationProvider
         }
     }
 
-    private static IEnumerable<ImageInformationDTO> FromImagesDictionary(IDictionary<string, string> imagesDictionary, string category)
+    private static List<ImageInformationDTO> FromImagesDictionary(IDictionary<string, string> imagesDictionary, string category)
     {
         var imageType = "data:image/png;base64,";
         var imagesList = new List<ImageInformationDTO>();
