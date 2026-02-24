@@ -19,22 +19,22 @@ jobs:
           dotnet-quality: 'preview'
 
       - name: Publish for Windows
-        run: |
-          dotnet publish \
-            "AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj" \
-            /p:PublishProfile=win32
+        uses: ./.github/actions/publish-dotnet
+        with:
+          project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
+          profile: win32
 
       - name: Publish for Linux
-        run: |
-          dotnet publish \
-            "AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj" \
-            /p:PublishProfile=linux
+        uses: ./.github/actions/publish-dotnet
+        with:
+          project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
+          profile: linux
 
       - name: Publish for macOS
-        run: |
-          dotnet publish \
-            "AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj" \
-            /p:PublishProfile=darwin
+        uses: ./.github/actions/publish-dotnet
+        with:
+          project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
+          profile: darwin
 
       - name: Verify bin folder
         run: |

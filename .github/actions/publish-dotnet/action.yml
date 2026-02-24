@@ -1,0 +1,12 @@
+name: "Publish .NET project with profile"
+description: "Runs dotnet publish with a given publish profile"
+inputs:
+  project:
+    required: true
+  profile:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: dotnet publish "${{ inputs.project }}" /p:PublishProfile=${{ inputs.profile }}
+      shell: bash
