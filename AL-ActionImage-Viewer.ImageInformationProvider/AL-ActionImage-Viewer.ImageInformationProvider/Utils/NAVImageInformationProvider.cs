@@ -30,9 +30,6 @@ public static class NAVImageInformationProvider
         var extensions = Directory.GetDirectories(vscodeExtensionsFolder);
         var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)) ?? string.Empty;
         var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win32", "Microsoft.Dynamics.Nav.CodeAnalysis.dll");
-        if (!File.Exists(codeAnalysisDll))
-            codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win64", "Microsoft.Dynamics.Nav.CodeAnalysis.dll");
-
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
 

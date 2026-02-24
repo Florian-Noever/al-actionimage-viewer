@@ -14,4 +14,21 @@
     <TrimmerRootAssembly Include="System.Collections.Immutable" />
   </ItemGroup>
 
+  <Target Name="CopyToExtensionBin" AfterTargets="Publish">
+    <PropertyGroup>
+      <ExtensionBinRoot>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '..', '..', 'bin'))))</ExtensionBinRoot>
+      <_ExtensionPlatform Condition="$(RuntimeIdentifier.StartsWith('win'))">win32</_ExtensionPlatform>
+      <_ExtensionPlatform Condition="$(RuntimeIdentifier.StartsWith('linux'))">linux</_ExtensionPlatform>
+      <_ExtensionPlatform Condition="$(RuntimeIdentifier.StartsWith('osx'))">darwin</_ExtensionPlatform>
+      <_ExeName Condition="$(RuntimeIdentifier.StartsWith('win'))">$(AssemblyName).exe</_ExeName>
+      <_ExeName Condition="!$(RuntimeIdentifier.StartsWith('win'))">$(AssemblyName)</_ExeName>
+      <_DestDir>$([System.IO.Path]::Combine('$(ExtensionBinRoot)', '$(_ExtensionPlatform)'))</_DestDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(_DestDir)"
+      Condition="'$(_ExtensionPlatform)' != ''" />
+    <Copy SourceFiles="$([System.IO.Path]::Combine('$(PublishDir)', '$(_ExeName)'))"
+      DestinationFolder="$(_DestDir)"
+      Condition="'$(_ExtensionPlatform)' != ''" />
+  </Target>
+
 </Project>
