@@ -37,17 +37,24 @@ jobs:
           fileName: "*.vsix"
           out-file-path: "."
 
+      - name: Find VSIX file
+        id: vsix
+        run: |
+          path=$(find . -maxdepth 1 -name '*.vsix' | head -1)
+          echo "path=$path" >> $GITHUB_OUTPUT
+          echo "Found VSIX: $path"
+
       # Currently AL-Language is not available on Open VSX Registry
       # - name: Publish to Open VSX Registry
       #   uses: HaaLeo/publish-vscode-extension@v2
       #   with:
       #     pat: ${{ secrets.OPEN_VSX_TOKEN }}
-      #     extensionFile: ./*.vsix
+      #     extensionFile: ${{ steps.vsix.outputs.path }}
 
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
-          extensionFile: ./*.vsix
+          extensionFile: ${{ steps.vsix.outputs.path }}
 
