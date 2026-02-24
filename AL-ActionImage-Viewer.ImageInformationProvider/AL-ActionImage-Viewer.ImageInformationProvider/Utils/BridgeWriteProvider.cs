@@ -46,12 +46,15 @@ public static class BridgeWriteProvider
         try
         {
 #if DEBUG
+            Console.SetOut(TextWriter.Null);
             Console.Error.WriteLine("Retrieving AL Images");
             var dictDebug = NAVImageInformationProvider.GetAllImages();
             Console.Error.WriteLine($"Retrieved {dictDebug.Values.Sum(x => x.Count())} Images");
+            using var stdout = Stream.Null;
+#else
+            using var stdout = Console.OpenStandardOutput();
 #endif
 
-            using var stdout = Console.OpenStandardOutput();
             using var bw = new BinaryWriter(stdout, Encoding.UTF8, leaveOpen: true);
 
             Console.Error.WriteLine("Retrieving AL Images");
@@ -93,6 +96,11 @@ public static class BridgeWriteProvider
 
             bw.Flush();
             Console.Error.WriteLine("All data written. Closing pipe.");
+
+#if DEBUG
+            Console.Error.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+#endif
         }
         catch (Exception ex)
         {

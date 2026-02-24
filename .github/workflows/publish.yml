@@ -1,33 +1,50 @@
 on:
-    release:
-        types: [published]
+  workflow_run:
+    workflows: ["Build and Package Extension"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to publish (e.g. v1.2.3)'
+        required: true
 
-name: Deploy Extension
+name: Publish Extension
 jobs:
-  deploy:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          fetch-tags: true
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Get release tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            echo "tag=${{ inputs.release_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=$(git tag --points-at HEAD)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download VSIX from release
+        run: gh release download "${{ steps.tag.outputs.tag }}" --pattern "*.vsix"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Currently AL-Language is not available on Open VSX Registry
       # - name: Publish to Open VSX Registry
       #   uses: HaaLeo/publish-vscode-extension@v2
-      #   id: publishToOpenVSX
       #   with:
       #     pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      #     extensionFile: ./*.vsix
 
-      - name: Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v2
-        with:
-          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-          registryUrl: https://marketplace.visualstudio.com
-          extensionFile: ${{ steps.publishToOpenVSX.outputs.vsixPath }}
+      # - name: Publish to Visual Studio Marketplace
+      #   uses: HaaLeo/publish-vscode-extension@v2
+      #   with:
+      #     pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+      #     registryUrl: https://marketplace.visualstudio.com
+      #     extensionFile: ./*.vsix
+
