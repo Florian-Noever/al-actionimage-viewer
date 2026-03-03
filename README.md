@@ -1,4 +1,4 @@
-# AL ActionImage Viewer
+# <img src="https://raw.githubusercontent.com/Florian-Noever/al-actionimage-viewer/refs/heads/main/assets/icon.svg" height="30"> AL ActionImage Viewer
 
 Loads AL Action Images directly from the [AL Language extension for Microsoft Dynamics 365 Business Central](https://marketplace.visualstudio.com/items?itemName=ms-dynamics-smb.al) and displays them in an easy to use overview with Categories, Search and Zooming abilities.
 
