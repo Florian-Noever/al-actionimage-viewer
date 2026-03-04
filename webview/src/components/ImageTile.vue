@@ -5,7 +5,8 @@
         @contextmenu.prevent="onContextMenu"
     >
         <img
-            :src="item.imageDataUrl ?? ''"
+            :src="item.imageDataUrl || placeholderSrc"
+            :class="{ placeholder: !item.imageDataUrl }"
             alt=""
             loading="lazy"
             @load="onImgLoad"
@@ -16,6 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import placeholderSrc from '../assets/photo.svg';
 import type { ImageInformationDTO } from '../types/imageInformationDTO';
 
 const props = defineProps<{ item: ImageInformationDTO }>();
@@ -31,6 +33,7 @@ function onContextMenu(e: MouseEvent): void {
 
 function onImgLoad(e: Event): void {
     const img = e.target as HTMLImageElement;
+    if (img.classList.contains('placeholder')) { return; }
     const nw = img.naturalWidth, nh = img.naturalHeight;
     if (!nw || !nh) { return; }
     const rw = img.clientWidth, rh = img.clientHeight;
@@ -70,6 +73,11 @@ function onImgLoad(e: Event): void {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     -ms-interpolation-mode: nearest-neighbor;
+}
+
+.tile img.placeholder {
+    opacity: 0.25;
+    image-rendering: auto;
 }
 
 .label {

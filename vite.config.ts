@@ -22,6 +22,7 @@ export default defineConfig({
             },
         },
         cssCodeSplit: false,
+        assetsInlineLimit: 8192,
         sourcemap: false,
         minify: true,
     },
