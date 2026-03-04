@@ -61,7 +61,7 @@ const emit = defineEmits<{
 
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
-const doSearch = debounce((query: string) => emit('search', query), 120);
+const doSearch = debounce((...args: unknown[]) => emit('search', args[0] as string), 120);
 
 function onSearchInput(e: Event): void {
     doSearch((e.target as HTMLInputElement).value);
