@@ -1,7 +1,9 @@
 <template>
     <div class="header">
-        <div class="title">{{ title }}</div>
-        <div class="count">{{ count }} items</div>
+        <div class="title-group">
+            <div class="title">{{ title }}</div>
+            <div class="count">{{ count }}&nbsp;items</div>
+        </div>
 
         <div class="search">
             <input
@@ -103,20 +105,43 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     display: flex;
     align-items: center;
     gap: 10px;
+    overflow: hidden;
+}
+
+/* Title + count — collapse first when space is tight */
+.title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex: 0 9 auto;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .title {
     font-weight: 600;
     opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex-shrink: 0;
 }
 
 .count {
     opacity: 0.6;
     font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 9;
+    min-width: 0;
+    overflow: hidden;
 }
 
+/* Search — grows to fill space, shrinks to minimum, capped at max */
 .search {
-    margin-left: 12px;
+    flex: 1 1 auto;
+    min-width: 150px;
+    max-width: 300px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -125,11 +150,14 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
     border-radius: 6px;
     padding: 2px 6px 2px 8px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .search input {
-    width: 220px;
-    max-width: 28vw;
+    flex: 1 1 0;
+    min-width: 40px;
+    width: 0; /* let flex determine actual width */
     background: transparent;
     color: inherit;
     border: none;
@@ -164,6 +192,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .zoom button {
@@ -183,6 +214,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
 .zoom input[type="range"] {
     width: 140px;
+    min-width: 60px;
+    flex: 1 1 60px;
     accent-color: var(--vscode-focusBorder);
 }
 
@@ -193,6 +226,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .reload {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
     margin-left: 8px;
     min-width: 28px;
     width: 28px;
