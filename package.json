@@ -48,20 +48,29 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run build:webview",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "build:webview": "vite build",
+    "watch:webview": "vite build --watch",
+    "dev:webview": "vite",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "package": "npx -y @vscode/vsce package"
   },
   "devDependencies": {
+    "@tanstack/vue-virtual": "^3.13.19",
     "@types/mocha": "^10.0.10",
     "@types/node": "25.x",
     "@types/vscode": "^1.105.0",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
+    "@vitejs/plugin-vue": "^6.0.4",
+    "@vue/tsconfig": "^0.9.0",
     "eslint": "^10.0.2",
-    "typescript": "^5.9.3"
+    "eslint-plugin-vue": "^10.8.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vue": "^3.5.29"
   }
 }

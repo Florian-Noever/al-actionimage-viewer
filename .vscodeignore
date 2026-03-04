@@ -1,10 +1,12 @@
 .vscode/**
 .vscode-test/**
 src/**
+webview/**
 .gitignore
 .yarnrc
 **/tsconfig.json
 **/eslint.config.mjs
+vite.config.ts
 **/*.map
 **/*.ts
 **/.vscode-test.*

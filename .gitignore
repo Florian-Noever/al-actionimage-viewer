@@ -287,6 +287,14 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# VS Code extension — compiled output
+out/
+
+# Vite webview build output (source of truth: webview/src/)
+# public/index.html is hand-maintained and intentionally tracked
+public/app.js
+public/styles.css
+
 # Visual Studio 6 build log
 *.plg
 

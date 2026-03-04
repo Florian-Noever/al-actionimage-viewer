@@ -1,0 +1,77 @@
+:root {
+    --rail-w: 240px;
+
+    /* base sizes */
+    --base-tile-w: 110;
+    --base-tile-h: 120;
+    --base-img: 48;
+
+    /* live sizes — updated by useZoom */
+    --tile-w: calc(var(--base-tile-w) * 1px);
+    --tile-h: calc(var(--base-tile-h) * 1px);
+    --img: calc(var(--base-img) * 1px);
+
+    --gap: 16px;
+    --pad: 12px;
+    --font: 12px;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: var(--vscode-font-family, ui-sans-serif, system-ui);
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+}
+
+/* Disable stray focus rings */
+input,
+button {
+    outline: none;
+    box-shadow: none;
+}
+
+input:focus,
+input:focus-visible,
+button:focus,
+button:focus-visible {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+/* ── Debug borders (toggled by Ctrl+Shift+D) ─────────────────────────── */
+html.debug-borders *:not(img):not(svg):not(path):not(circle):not(rect) {
+    outline: 1px solid rgba(255, 0, 128, 0.45) !important;
+}
+
+html.debug-borders .tile {
+    outline-color: rgba(0, 180, 255, 0.7) !important;
+}
+
+html.debug-borders .vrow {
+    outline-color: rgba(255, 200, 0, 0.6) !important;
+}
+
+html.debug-borders .scroller {
+    outline-color: rgba(0, 255, 100, 0.7) !important;
+}
+
+html.debug-borders .rail {
+    outline-color: rgba(180, 0, 255, 0.6) !important;
+}
+
+html.debug-borders .header {
+    outline-color: rgba(255, 120, 0, 0.6) !important;
+}
+
+html.debug-borders .ctxmenu {
+    outline-color: rgba(255, 50, 50, 0.8) !important;
+}
+
+html.debug-borders .status-pane {
+    outline-color: rgba(50, 50, 255, 0.8) !important;
+}
