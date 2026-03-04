@@ -1,8 +1,9 @@
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import pluginVue from "eslint-plugin-vue";
 
-export default [{
-    files: ["**/*.ts"],
+export default [...pluginVue.configs["flat/recommended"], {
+    files: ["**/*.ts", "**/*.vue"],
 }, {
     plugins: {
         "@typescript-eslint": typescriptEslint,
