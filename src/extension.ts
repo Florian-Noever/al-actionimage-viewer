@@ -23,6 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 				localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'public')],
 			}
 		);
+		panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'assets', 'icon.svg');
 		panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
 		panel.webview.onDidReceiveMessage(async (msg) => {
 			if (msg?.type === 'ready' || msg?.type === 'retry') {
