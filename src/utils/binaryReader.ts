@@ -1,6 +1,6 @@
-import { spawn } from "node:child_process";
-import { ImageInformation, ImageInformationDTO } from "../types/imageInformationDTO";
-import { log } from "../extension";
+import { spawn } from 'node:child_process';
+import { ImageInformation, ImageInformationDTO } from '../types/imageInformationDTO';
+import { log } from '../extension';
 
 class BinaryReader {
     private buf: Buffer;
@@ -12,7 +12,7 @@ class BinaryReader {
 
     private ensure(n: number) {
         if (this.offset + n > this.buf.length) {
-            throw new RangeError("Unexpected end of stream");
+            throw new RangeError('Unexpected end of stream');
         }
     }
 
@@ -83,10 +83,10 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
             break;
         }
 
-        // Try to read the key; if we can’t even read a length, we’re done.
+        // Try to read the key; if we can't even read a length, we're done.
         let key: string;
         try {
-            key = br.readString() ?? "";
+            key = br.readString() ?? '';
         } catch {
             break;
         }
@@ -129,19 +129,19 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
 export async function readFromBridgeStdout(bridgeExePath: string, args: string[] = []): Promise<Record<string, ImageInformation[]>> {
     return new Promise((resolve, reject) => {
         const child = spawn(bridgeExePath, args, {
-            stdio: ["ignore", "pipe", "pipe"], // read stdout, show stderr in this process
+            stdio: ['ignore', 'pipe', 'pipe'], // read stdout, show stderr in this process
             windowsHide: true, // like CreateNoWindow/Hidden
         });
 
         const chunks: Buffer[] = [];
-        child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
-        child.stderr.on("data", (e) => log.info(e.toString()));
-        child.once("error", reject);
+        child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
+        child.stderr.on('data', (e) => log.info(e.toString()));
+        child.once('error', reject);
 
-        child.once("close", (code) => {
+        child.once('close', (code) => {
             try {
                 if (code !== 0 && code !== null) {
-                    // Non-zero exit isn’t necessarily fatal for parsing; but surface it.
+                    // Non-zero exit isn't necessarily fatal for parsing; but surface it.
                     // We still try to parse whatever we got.
                 }
                 const buf = Buffer.concat(chunks);
