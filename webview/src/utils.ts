@@ -22,14 +22,6 @@ export function notify(kind: 'info' | 'warning' | 'error', message: string): voi
     } catch { /* swallow */ }
 }
 
-export function debounce<T extends (...args: unknown[]) => void>(fn: T, ms = 100): T {
-    let t: ReturnType<typeof setTimeout>;
-    return ((...args: unknown[]) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), ms);
-    }) as T;
-}
-
 export function normalize(s: string | null | undefined): string {
     return (s ?? '').toString().trim().toLowerCase();
 }

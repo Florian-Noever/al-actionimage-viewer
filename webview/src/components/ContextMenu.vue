@@ -1,16 +1,18 @@
 <template>
-    <div
-        v-if="visible && item"
-        ref="menuRef"
-        class="ctxmenu"
-        role="menu"
-        :style="posStyle"
-        @keydown.escape="$emit('close')"
-    >
-        <button class="ctxitem" role="menuitem" data-action="copy-name" @click="doAction('copy-name')">Copy Name</button>
-        <button class="ctxitem" role="menuitem" data-action="copy-image" @click="doAction('copy-image')">Copy Image</button>
-        <button class="ctxitem" role="menuitem" data-action="export-image" @click="doAction('export-image')">Export Image</button>
-    </div>
+    <Teleport to="body">
+        <div
+            v-if="visible && item"
+            ref="menuRef"
+            class="ctxmenu"
+            role="menu"
+            :style="menuStyle"
+            @keydown.escape="$emit('close')"
+        >
+            <button class="ctxitem" role="menuitem" data-action="copy-name" @click="doAction('copy-name')">Copy Name</button>
+            <button class="ctxitem" role="menuitem" data-action="copy-image" @click="doAction('copy-image')">Copy Image</button>
+            <button class="ctxitem" role="menuitem" data-action="export-image" @click="doAction('export-image')">Export Image</button>
+        </div>
+    </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -30,29 +32,29 @@ const emit = defineEmits<{
 }>();
 
 const menuRef = ref<HTMLElement | null>(null);
-const adjustedX = ref(props.x);
-const adjustedY = ref(props.y);
+const menuX = ref(0);
+const menuY = ref(0);
 
-const posStyle = computed(() => ({
-    left: adjustedX.value + 'px',
-    top: adjustedY.value + 'px',
+const menuStyle = computed(() => ({
+    left: menuX.value + 'px',
+    top: menuY.value + 'px',
 }));
 
-// Adjust position to stay within viewport after DOM update
+// Position menu at click location with automatic boundary adjustment
 watch(() => props.visible, async (v) => {
     if (!v) { return; }
-    adjustedX.value = props.x;
-    adjustedY.value = props.y;
+    menuX.value = props.x;
+    menuY.value = props.y;
     await nextTick();
     if (!menuRef.value) { return; }
+    // Ensure menu stays within viewport bounds
     const rect = menuRef.value.getBoundingClientRect();
-    if (adjustedX.value + rect.width + 4 > window.innerWidth) {
-        adjustedX.value = window.innerWidth - rect.width - 4;
+    if (menuX.value + rect.width > window.innerWidth) {
+        menuX.value = window.innerWidth - rect.width - 4;
     }
-    if (adjustedY.value + rect.height + 4 > window.innerHeight) {
-        adjustedY.value = window.innerHeight - rect.height - 4;
+    if (menuY.value + rect.height > window.innerHeight) {
+        menuY.value = window.innerHeight - rect.height - 4;
     }
-    menuRef.value.querySelector<HTMLElement>('.ctxitem')?.focus();
 });
 
 function doAction(action: string): void {

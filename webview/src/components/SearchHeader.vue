@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { debounce } from '../utils';
+import { useDebounceFn } from '@vueuse/core';
 import closeIcon from '../assets/close.svg?raw';
 import searchIcon from '../assets/search.svg?raw';
 import reloadIcon from '../assets/refresh.svg?raw';
@@ -92,7 +92,7 @@ const emit = defineEmits<{
 
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
-const doSearch = debounce((...args: unknown[]) => emit('search', args[0] as string), 120);
+const doSearch = useDebounceFn((query: string) => emit('search', query), 120);
 
 function onSearchInput(e: Event): void {
     doSearch((e.target as HTMLInputElement).value);
