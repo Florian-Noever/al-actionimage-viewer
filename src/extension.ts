@@ -2,6 +2,12 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { getImageInformations } from './utils/imageInformationProvider';
 
+interface ExportImagePayload {
+	name: string;
+	mime: string;
+	base64: string;
+}
+
 export const EXTENSION = 'al-actionimage-viewer';
 export const EXTENSION_NAME = 'AL ActionImage Viewer';
 export const COMMAND_OPEN = 'open';
@@ -43,10 +49,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 					// success
 					panel.webview.postMessage({ type: 'setData', payload: imageGroups });
-				} catch (err: any) {
+				} catch (err: unknown) {
 					panel.webview.postMessage({
 						type: 'error',
-						payload: { message: `Failed to load images: ${err?.message ?? String(err)}` }
+						payload: { message: `Failed to load images: ${err instanceof Error ? err.message : String(err)}` }
 					});
 				}
 
@@ -75,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 
-	console.log(`Successfully activated "${EXTENSION_NAME}" extension.`);
+	log.info(`Successfully activated "${EXTENSION_NAME}" extension.`);
 }
 
 export function deactivate() { }
@@ -107,7 +113,7 @@ function getNonce() {
 	return text;
 }
 
-async function exportImage(msg: any) {
+async function exportImage(msg: { type: string; payload?: ExportImagePayload }) {
 	try {
 		const { name, mime, base64 } = msg.payload ?? {};
 		if (!name || !mime || !base64) {
@@ -132,7 +138,7 @@ async function exportImage(msg: any) {
 		const buf = Buffer.from(base64, 'base64');
 		await vscode.workspace.fs.writeFile(uri, buf);
 		vscode.window.showInformationMessage(`Saved: ${uri.fsPath}`);
-	} catch (err: any) {
-		vscode.window.showErrorMessage(`Export failed: ${err?.message || String(err)}`);
+	} catch (err: unknown) {
+		vscode.window.showErrorMessage(`Export failed: ${err instanceof Error ? err.message : String(err)}`);
 	}
 }
