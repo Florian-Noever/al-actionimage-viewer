@@ -2,7 +2,7 @@
   "name": "al-actionimage-viewer",
   "displayName": "AL ActionImage Viewer",
   "description": "View, Search and Copy AL Action Images",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "publisher": "Florian-Noever",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -52,9 +52,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build",
-    "watch:webview": "vite build --watch",
     "dev:webview": "vite",
-    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "package": "npx -y @vscode/vsce package"
   },
