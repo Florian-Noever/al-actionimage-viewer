@@ -35,7 +35,9 @@
                         :key="item.name ?? vRow.index"
                         :item="item"
                         :img-size="imgSize"
+                        :selected="item.name !== null && item.name === selectedName"
                         @contextmenu="$emit('contextmenu', $event)"
+                        @select="$emit('select', $event)"
                     />
                 </div>
             </div>
@@ -55,11 +57,13 @@ const props = defineProps<{
     tileH: number;
     imgSize: number;
     gap: number;
+    selectedName?: string | null;
 }>();
 
 const emit = defineEmits<{
     contextmenu: [payload: { item: ImageInformationDTO; clientX: number; clientY: number }];
     zoomStep: [direction: number];
+    select: [item: ImageInformationDTO];
 }>();
 
 const PAD = 24;
@@ -101,6 +105,20 @@ function getCurrentTopIndex(): number {
 }
 
 watch([() => props.tileW, () => props.tileH], () => {
+    // If there is a selected item visible in the current list, keep it on screen
+    const selectedIdx = props.selectedName
+        ? props.items.findIndex(item => item.name === props.selectedName)
+        : -1;
+
+    if (selectedIdx >= 0) {
+        const captured = selectedIdx;
+        nextTick(() => {
+            const row = Math.floor(captured / columns.value);
+            rowVirtualizer.value.scrollToIndex(row, { align: 'center' });
+        });
+        return;
+    }
+
     if (anchorIndex === null) { anchorIndex = getCurrentTopIndex(); }
     if (anchorTimer) { clearTimeout(anchorTimer); }
     anchorTimer = setTimeout(() => { anchorIndex = null; anchorTimer = null; }, 1000);

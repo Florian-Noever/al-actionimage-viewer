@@ -1,7 +1,9 @@
 <template>
     <div
         class="tile"
+        :class="{ selected }"
         :title="item.name ?? '(unnamed)'"
+        @click="onTileClick"
         @contextmenu.prevent="onContextMenu"
     >
         <img
@@ -24,11 +26,17 @@ const ORIGINAL_IMG_SIZE = 32; // Assuming all images are 32px
 const props = defineProps<{ 
     item: ImageInformationDTO;
     imgSize: number;
+    selected: boolean;
 }>();
 
 const emit = defineEmits<{
     contextmenu: [payload: { item: ImageInformationDTO; clientX: number; clientY: number }];
+    select: [item: ImageInformationDTO];
 }>();
+
+function onTileClick(): void {
+    emit('select', props.item);
+}
 
 // Determine if image is upscaled relative to original 32px size
 const upscaled = computed(() => props.imgSize >= ORIGINAL_IMG_SIZE);
@@ -56,6 +64,16 @@ function onContextMenu(e: MouseEvent): void {
 
 .tile:hover {
     background: var(--vscode-editor-hoverHighlightBackground, rgba(127, 127, 127, 0.08));
+}
+
+.tile.selected {
+    background: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.25));
+    outline: 1.5px solid var(--vscode-focusBorder, #007fd4);
+    outline-offset: -1.5px;
+}
+
+.tile.selected:hover {
+    background: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.35));
 }
 
 .tile img {
