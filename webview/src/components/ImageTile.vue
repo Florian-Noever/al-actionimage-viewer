@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import placeholderSrc from '../assets/photo.svg';
+import placeholderSrc from '../assets/image.svg';
 import type { ImageInformationDTO } from '../types/imageInformationDTO';
 
 const props = defineProps<{ item: ImageInformationDTO }>();
