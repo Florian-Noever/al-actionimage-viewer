@@ -33,6 +33,13 @@
             <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
         </div>
 
+        <button
+            class="sort"
+            :title="sortAscending ? 'Sort: A→Z (click for Z→A)' : 'Sort: Z→A (click for A→Z)'"
+            :aria-label="sortAscending ? 'Sort ascending' : 'Sort descending'"
+            @click="$emit('sort')"
+        >{{ sortAscending ? 'A↑' : 'A↓' }}</button>
+
         <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">⟳</button>
     </div>
 </template>
@@ -49,6 +56,7 @@ const props = defineProps<{
     zoomMax: number;
     zoomStep: number;
     searchQuery: string;
+    sortAscending: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -56,6 +64,7 @@ const emit = defineEmits<{
     zoomOut: [];
     zoomSet: [value: number];
     reload: [];
+    sort: [];
     search: [query: string];
 }>();
 
@@ -224,23 +233,32 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     font-size: 12px;
 }
 
+.sort,
 .reload {
     position: relative;
     z-index: 2;
     flex-shrink: 0;
     margin-left: 8px;
-    min-width: 28px;
-    width: 28px;
     height: 24px;
-    padding: 0;
+    padding: 0 6px;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
     color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
     border-radius: 4px;
     cursor: pointer;
     line-height: 1;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
+.reload {
+    min-width: 28px;
+    width: 28px;
+    padding: 0;
+    font-size: 14px;
+}
+
+.sort:hover,
 .reload:hover {
     background: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
 }

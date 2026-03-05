@@ -138,7 +138,8 @@ onUnmounted(() => ro?.disconnect());
 <style scoped>
 .scroller {
     position: relative;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     height: 100%;
 }
 
