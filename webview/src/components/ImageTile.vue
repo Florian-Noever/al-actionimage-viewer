@@ -6,39 +6,35 @@
     >
         <img
             :src="item.imageDataUrl || placeholderSrc"
-            :class="{ placeholder: !item.imageDataUrl }"
+            :class="{ placeholder: !item.imageDataUrl, upscaled }"
             alt=""
             loading="lazy"
-            @load="onImgLoad"
         />
         <div class="label">{{ item.name ?? '(unnamed)' }}</div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import placeholderSrc from '../assets/image.svg';
 import type { ImageInformationDTO } from '../types/imageInformationDTO';
 
-const props = defineProps<{ item: ImageInformationDTO }>();
+const ORIGINAL_IMG_SIZE = 32; // Assuming all images are 32px
+
+const props = defineProps<{ 
+    item: ImageInformationDTO;
+    imgSize: number;
+}>();
+
 const emit = defineEmits<{
     contextmenu: [payload: { item: ImageInformationDTO; clientX: number; clientY: number }];
 }>();
 
-const imgRef = ref<HTMLImageElement | null>(null);
+// Determine if image is upscaled relative to original 32px size
+const upscaled = computed(() => props.imgSize >= ORIGINAL_IMG_SIZE);
 
 function onContextMenu(e: MouseEvent): void {
     emit('contextmenu', { item: props.item, clientX: e.clientX, clientY: e.clientY });
-}
-
-function onImgLoad(e: Event): void {
-    const img = e.target as HTMLImageElement;
-    if (img.classList.contains('placeholder')) { return; }
-    const nw = img.naturalWidth, nh = img.naturalHeight;
-    if (!nw || !nh) { return; }
-    const rw = img.clientWidth, rh = img.clientHeight;
-    const upscaled = rw > nw * 1.01 || rh > nh * 1.01;
-    img.classList.toggle('upscaled', upscaled);
 }
 </script>
 
