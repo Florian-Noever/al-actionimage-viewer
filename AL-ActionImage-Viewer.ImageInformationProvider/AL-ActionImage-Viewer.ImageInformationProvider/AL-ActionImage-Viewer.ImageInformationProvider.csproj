@@ -24,11 +24,8 @@
       <_ExeName Condition="!$(RuntimeIdentifier.StartsWith('win'))">$(AssemblyName)</_ExeName>
       <_DestDir>$([System.IO.Path]::Combine('$(ExtensionBinRoot)', '$(_ExtensionPlatform)'))</_DestDir>
     </PropertyGroup>
-    <MakeDir Directories="$(_DestDir)"
-      Condition="'$(_ExtensionPlatform)' != ''" />
-    <Copy SourceFiles="$([System.IO.Path]::Combine('$(PublishDir)', '$(_ExeName)'))"
-      DestinationFolder="$(_DestDir)"
-      Condition="'$(_ExtensionPlatform)' != ''" />
+    <MakeDir Directories="$(_DestDir)" Condition="'$(_ExtensionPlatform)' != ''" />
+    <Copy SourceFiles="$([System.IO.Path]::Combine('$(PublishDir)', '$(_ExeName)'))" DestinationFolder="$(_DestDir)" Condition="'$(_ExtensionPlatform)' != ''" />
   </Target>
 
 </Project>
