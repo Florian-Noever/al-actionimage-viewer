@@ -22,7 +22,7 @@
         </div>
 
         <div class="zoom">
-            <button title="Zoom Out (Ctrl+-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
+            <button title="Zoom Out (-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
                 <span class="icon" v-html="inlineSvg(zoomOutIcon)" aria-hidden="true"></span>
             </button>
             <input
@@ -34,7 +34,7 @@
                 aria-label="Zoom Level"
                 @input="onSlider"
             />
-            <button title="Zoom In (Ctrl+=)" aria-label="Zoom In" @click="$emit('zoomIn')">
+            <button title="Zoom In (+)" aria-label="Zoom In" @click="$emit('zoomIn')">
                 <span class="icon" v-html="inlineSvg(zoomInIcon)" aria-hidden="true"></span>
             </button>
             <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
