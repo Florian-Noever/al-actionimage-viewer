@@ -66,8 +66,9 @@
             @close="catCtx.visible = false"
         />
 
-        <div v-if="debugActive" class="debug-badge" title="Debug borders ON — Ctrl+Shift+D to toggle">
-            ⬡ DEBUG
+        <div v-if="debugActive" class="debug-badge" title="Debug borders ON — click or Ctrl+Shift+D to toggle" @click="toggleDebug">
+            <img :src="hexagonSrc" class="debug-hex" alt="" />
+            DEBUG
         </div>
     </div>
 </template>
@@ -86,11 +87,12 @@ import { useDebug } from './composables/useDebug';
 import { postMessage } from './vscode';
 import { parseDataUrl, blobFromDataUrl, notify } from './utils';
 import type { ImageInformationDTO, ImageMap } from './types/imageInformationDTO';
+import hexagonSrc from './assets/hexagon.svg';
 
 const GAP = 16;
 
 // ---- Debug ----
-const { debugActive } = useDebug();
+const { debugActive, toggle: toggleDebug } = useDebug();
 
 // ---- Zoom ----
 const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
@@ -317,6 +319,9 @@ declare function acquireVsCodeApi(): unknown;
     bottom: 10px;
     right: 12px;
     z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     padding: 3px 8px;
     border-radius: 4px;
     font-size: 11px;
@@ -325,7 +330,14 @@ declare function acquireVsCodeApi(): unknown;
     background: rgba(255, 0, 128, 0.15);
     border: 1px solid rgba(255, 0, 128, 0.6);
     color: rgb(255, 80, 160);
-    pointer-events: none;
+    pointer-events: all;
+    cursor: pointer;
     user-select: none;
+}
+
+.debug-hex {
+    width: 14px;
+    height: 14px;
+    filter: invert(44%) sepia(90%) saturate(600%) hue-rotate(290deg) brightness(110%);
 }
 </style>
