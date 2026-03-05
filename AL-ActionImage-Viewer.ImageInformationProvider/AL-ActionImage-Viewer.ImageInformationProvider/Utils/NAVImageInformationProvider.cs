@@ -11,13 +11,13 @@ public static class NAVImageInformationProvider
 
     public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages() => GetAllImagesLocal();
 
-    public static IEnumerable<ImageInformationDTO> GetActionImages() => GetImagesLocal("GetActionImageResources");
+    public static IEnumerable<ImageInformationDTO> GetActionImages() => GetImagesLocal(NavTypeHelper.GetActionImageResourcesMethodName);
 
-    public static IEnumerable<ImageInformationDTO> GetFieldCueGroupImages() => GetImagesLocal("GetFieldCueGroupImageResources");
+    public static IEnumerable<ImageInformationDTO> GetFieldCueGroupImages() => GetImagesLocal(NavTypeHelper.GetFieldCueGroupImageResourcesMethodName);
 
-    public static IEnumerable<ImageInformationDTO> GetActionCueGroupImages() => GetImagesLocal("GetActionCueGroupImageResources");
+    public static IEnumerable<ImageInformationDTO> GetActionCueGroupImages() => GetImagesLocal(NavTypeHelper.GetActionCueGroupImageResourcesMethodName);
 
-    public static IEnumerable<ImageInformationDTO> GetRoleCenterActionImages() => GetImagesLocal("GetRoleCenterActionGroupImageResources");
+    public static IEnumerable<ImageInformationDTO> GetRoleCenterActionImages() => GetImagesLocal(NavTypeHelper.GetRoleCenterActionGroupImageResourcesMethodName);
 
     public static bool IsALExtensionInstalled() => GetMicrosoftDynamicsNavCodeAnalysisDllPath() is not null;
 
@@ -29,7 +29,7 @@ public static class NAVImageInformationProvider
             return null;
         var extensions = Directory.GetDirectories(vscodeExtensionsFolder);
         var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)) ?? string.Empty;
-        var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win32", "Microsoft.Dynamics.Nav.CodeAnalysis.dll");
+        var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win32", NavTypeHelper.FullNavCodeAnalysisDllName);
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
 
@@ -45,12 +45,15 @@ public static class NAVImageInformationProvider
 
             var assembly = Assembly.LoadFrom(dllPath);
 
-            var imageResourcesType = assembly.GetType("Microsoft.Dynamics.Nav.CodeAnalysis.ImageResources");
+            var imageResourcesType = assembly.GetType(NavTypeHelper.FullNavCodeAnalysisImageResourcesTypeName);
             var method = imageResourcesType?.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             var imagesDictionary = method?.Invoke(null, null) as IDictionary<string, string>;
             if (imagesDictionary is not null)
             {
-                var category = method!.Name.Replace("Get", string.Empty).Replace("Resource", string.Empty);
+                var category = method!.Name
+                    .Replace("Get", string.Empty, StringComparison.OrdinalIgnoreCase)
+                    .Replace("Resource", string.Empty, StringComparison.OrdinalIgnoreCase);
+
                 var imageInfos = FromImagesDictionary(imagesDictionary, category);
                 imagesList.AddRange(imageInfos);
             }
@@ -80,7 +83,7 @@ public static class NAVImageInformationProvider
 
             var assembly = Assembly.LoadFrom(dllPath);
 
-            var imageResourcesType = assembly.GetType("Microsoft.Dynamics.Nav.CodeAnalysis.ImageResources")!;
+            var imageResourcesType = assembly.GetType(NavTypeHelper.FullNavCodeAnalysisImageResourcesTypeName)!;
 
             var methods = imageResourcesType
                 .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
@@ -120,7 +123,7 @@ public static class NAVImageInformationProvider
         try
         {
             var asm = Assembly.LoadFrom(dllPath);
-            var t = asm.GetType("Microsoft.Dynamics.Nav.CodeAnalysis.ImageResources", throwOnError: true)!;
+            var t = asm.GetType(NavTypeHelper.FullNavCodeAnalysisImageResourcesTypeName, throwOnError: true)!;
             RuntimeHelpers.RunClassConstructor(t.TypeHandle);
         }
         catch (TypeLoadException tle)
