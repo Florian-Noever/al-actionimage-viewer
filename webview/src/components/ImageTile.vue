@@ -59,7 +59,7 @@ function onContextMenu(e: MouseEvent): void {
     padding: 8px 4px;
     box-sizing: border-box;
     user-select: none;
-    cursor: default;
+    cursor: pointer;
 }
 
 .tile:hover {
