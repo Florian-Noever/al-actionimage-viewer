@@ -65,7 +65,6 @@ import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import CategoryRail from './components/CategoryRail.vue';
 import SearchHeader from './components/SearchHeader.vue';
 import ImageGrid from './components/ImageGrid.vue';
-import ImageTile from './components/ImageTile.vue';
 import StatusPane from './components/StatusPane.vue';
 import ContextMenu from './components/ContextMenu.vue';
 import { useZoom, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './composables/useZoom';
