@@ -37,6 +37,7 @@
                     :items="currentItems"
                     :tile-w="tileW"
                     :tile-h="tileH"
+                    :img-size="imgSize"
                     :gap="GAP"
                     @contextmenu="openCtxMenu"
                     @zoom-step="step => applyZoom(zoom + step * ZOOM_STEP)"
@@ -80,7 +81,7 @@ const GAP = 16;
 const { debugActive } = useDebug();
 
 // ---- Zoom ----
-const { zoom, tileW, tileH, applyZoom, zoomIn, zoomOut } = useZoom();
+const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
 
 // ---- Data state ----
 const data = ref<ImageMap>({});

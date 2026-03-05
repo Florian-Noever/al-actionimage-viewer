@@ -34,6 +34,7 @@
                         v-for="item in rowItems(vRow.index)"
                         :key="item.name ?? vRow.index"
                         :item="item"
+                        :img-size="imgSize"
                         @contextmenu="$emit('contextmenu', $event)"
                     />
                 </div>
@@ -52,6 +53,7 @@ const props = defineProps<{
     items: ImageInformationDTO[];
     tileW: number;
     tileH: number;
+    imgSize: number;
     gap: number;
 }>();
 
