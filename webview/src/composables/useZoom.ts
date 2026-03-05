@@ -13,7 +13,7 @@ const zoom = ref(1.0);
 
 function applyZoom(newZoom: number): void {
     newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +newZoom));
-    if (newZoom === zoom.value) { return; }
+    if (!isFinite(newZoom) || newZoom === zoom.value) { return; }
     zoom.value = newZoom;
     document.documentElement.style.setProperty('--tile-w', Math.round(BASE_TILE_W * newZoom) + 'px');
     document.documentElement.style.setProperty('--tile-h', Math.round(BASE_TILE_H * newZoom) + 'px');

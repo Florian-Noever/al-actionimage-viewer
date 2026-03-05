@@ -55,7 +55,10 @@ public static class NAVImageInformationProvider
                 imagesList.AddRange(imageInfos);
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading images via reflection ({methodName}): {ex}");
+        }
         return imagesList;
     }
 
@@ -105,7 +108,10 @@ public static class NAVImageInformationProvider
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error during image group discovery: {ex}");
+        }
         return imageGroupsDict;
     }
 
