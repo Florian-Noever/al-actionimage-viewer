@@ -31,8 +31,9 @@ const imgSize = computed(() => Math.round(BASE_IMG * zoom.value));
 
 function setupKeyboardHandlers(): () => void {
     function onKeydown(e: KeyboardEvent): void {
-        const ctrlOrCmd = e.ctrlKey || e.metaKey;
-        if (!ctrlOrCmd) { return; }
+        if (e.ctrlKey || e.metaKey || e.altKey) { return; }
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') { return; }
         if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(); }
         if (e.key === '-') { e.preventDefault(); zoomOut(); }
         if (e.key === '0') { e.preventDefault(); resetZoom(); }
