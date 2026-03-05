@@ -57,6 +57,8 @@ public static class NAVImageInformationProvider
                 var imageInfos = FromImagesDictionary(imagesDictionary, category);
                 imagesList.AddRange(imageInfos);
             }
+
+            imagesList = [.. imagesList.OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase)];
         }
         catch (Exception ex)
         {
