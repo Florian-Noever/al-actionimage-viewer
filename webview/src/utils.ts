@@ -7,18 +7,13 @@ export function parseDataUrl(dataUrl: string): { mime: string; base64: string; b
     return { mime, base64: b64, byteLength: Math.floor((b64.length * 3) / 4) };
 }
 
-export async function blobFromDataUrl(dataUrl: string): Promise<Blob> {
-    try {
-        const res = await fetch(dataUrl);
-        return await res.blob();
-    } catch {
-        const parsed = parseDataUrl(dataUrl);
-        if (!parsed) { throw new Error('Not a base64 data URL'); }
-        const bin = atob(parsed.base64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
-        return new Blob([bytes], { type: parsed.mime });
-    }
+export function blobFromDataUrl(dataUrl: string): Blob {
+    const parsed = parseDataUrl(dataUrl);
+    if (!parsed) { throw new Error('Not a base64 data URL'); }
+    const bin = atob(parsed.base64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+    return new Blob([bytes], { type: parsed.mime });
 }
 
 export function notify(kind: 'info' | 'warning' | 'error', message: string): void {

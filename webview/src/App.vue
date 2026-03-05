@@ -88,6 +88,8 @@ const activeCategory = ref('All Images');
 // ---- Search ----
 const { searchQuery, currentItems } = useSearch(data, categories, activeCategory);
 
+let devTimer: ReturnType<typeof setTimeout> | undefined;
+
 // ---- Loading / error state ----
 const loading = ref(false);
 const loadingMessage = ref('Loading images…');
@@ -134,7 +136,7 @@ async function onCtxAction(action: string, item: ImageInformationDTO): Promise<v
             notify('info', `Copied name: ${name}`);
         }
         if (action === 'copy-image') {
-            const blob = await blobFromDataUrl(src);
+            const blob = blobFromDataUrl(src);
             try {
                 await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
                 notify('info', 'Image copied to clipboard.');
@@ -167,7 +169,8 @@ function requestReload(): void {
 
 // ---- Message handler ----
 function onMessage(evt: MessageEvent): void {
-    const { type, payload } = (evt.data ?? {}) as { type: string; payload: unknown };
+    if (!evt.data || typeof evt.data.type !== 'string') { return; }
+    const { type, payload } = evt.data as { type: string; payload: unknown };
     if (type === 'loading') {
         showLoading((payload as { message?: string })?.message || 'Loading…');
     }
@@ -209,11 +212,12 @@ onMounted(() => {
                 name: `Other ${i + 1}`, category: 'OtherImages', tags: [], imageDataUrl: '',
             })),
         };
-        setTimeout(() => window.dispatchEvent(new MessageEvent('message', { data: { type: 'setData', payload: demo } })), 300);
+        devTimer = setTimeout(() => window.dispatchEvent(new MessageEvent('message', { data: { type: 'setData', payload: demo } })), 300);
     }
 });
 
 onUnmounted(() => {
+    clearTimeout(devTimer);
     window.removeEventListener('message', onMessage);
     window.removeEventListener('keydown', onKeydown);
 });

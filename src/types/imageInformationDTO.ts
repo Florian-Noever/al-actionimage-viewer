@@ -5,4 +5,4 @@ export interface ImageInformationDTO {
     imageDataUrl?: string | null;
 }
 
-export interface ImageInformation extends ImageInformationDTO { }
+export type ImageInformation = ImageInformationDTO;

@@ -9,6 +9,8 @@ enum Platform {
     MacOS = 'darwin'
 }
 
+let executableBitSet = false;
+
 function platformFolder(): Platform {
     switch (process.platform) {
         case 'win32':
@@ -36,9 +38,10 @@ function getImageInfoProviderPath(context: vscode.ExtensionContext): string {
 export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformation[]>> {
     const path = getImageInfoProviderPath(context);
 
-    // Ensure the binary is executable on non-Windows platforms
-    if (process.platform !== 'win32') {
+    // Ensure the binary is executable on non-Windows platforms (only needs to happen once)
+    if (process.platform !== 'win32' && !executableBitSet) {
         fs.chmodSync(path, 0o755); // +x
+        executableBitSet = true;
     }
 
     return await readFromBridgeStdout(path);

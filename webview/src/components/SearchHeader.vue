@@ -68,7 +68,6 @@ function onSearchInput(e: Event): void {
 }
 
 function onClear(): void {
-    if (searchInputRef.value) { searchInputRef.value.value = ''; }
     emit('search', '');
     searchInputRef.value?.focus();
 }
