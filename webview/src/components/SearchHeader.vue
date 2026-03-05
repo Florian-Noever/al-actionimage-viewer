@@ -11,7 +11,7 @@
                 ref="searchInputRef"
                 type="text"
                 :value="searchQuery"
-                placeholder='Search (supports *, "exact")'
+                placeholder='Search (supports * & "exact")'
                 aria-label="Search images"
                 spellcheck="false"
                 @input="onSearchInput"
