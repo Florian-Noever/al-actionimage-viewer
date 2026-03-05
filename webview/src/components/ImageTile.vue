@@ -3,12 +3,15 @@
         class="tile"
         :class="{ selected }"
         :title="item.name ?? '(unnamed)'"
+        :draggable="!!item.imageDataUrl"
         @click="onTileClick"
+        @dragstart="onDragStart"
         @contextmenu.prevent="onContextMenu"
     >
         <img
             :src="item.imageDataUrl || placeholderSrc"
             :class="{ placeholder: !item.imageDataUrl, upscaled }"
+            draggable="false"
             alt=""
             loading="lazy"
         />
@@ -40,6 +43,17 @@ function onTileClick(): void {
 
 // Determine if image is upscaled relative to original 32px size
 const upscaled = computed(() => props.imgSize >= ORIGINAL_IMG_SIZE);
+
+function onDragStart(e: DragEvent): void {
+    if (!e.dataTransfer || !props.item.imageDataUrl) { return; }
+    const src = props.item.imageDataUrl;
+    const mimeMatch = src.match(/^data:([^;]+);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+    const extMap: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/bmp': 'bmp', 'image/webp': 'webp' };
+    const ext = extMap[mime] ?? 'png';
+    const safeName = (props.item.name ?? 'image').replace(/[\\/:*?"<>|]/g, '_');
+    e.dataTransfer.setData('DownloadURL', `${mime}:${safeName}.${ext}:${src}`);
+}
 
 function onContextMenu(e: MouseEvent): void {
     emit('contextmenu', { item: props.item, clientX: e.clientX, clientY: e.clientY });
