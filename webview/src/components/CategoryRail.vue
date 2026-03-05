@@ -1,5 +1,5 @@
 <template>
-    <aside class="rail">
+    <aside class="rail" @contextmenu.prevent>
         <h3>Categories</h3>
         <div role="radiogroup" aria-label="Image Categories">
             <label
@@ -8,6 +8,7 @@
                 class="radio"
                 role="radio"
                 :aria-checked="active === cat ? 'true' : 'false'"
+                @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
             >
                 <input
                     type="radio"
@@ -30,7 +31,10 @@ const props = defineProps<{
     active: string;
 }>();
 
-defineEmits<{ change: [category: string] }>();
+defineEmits<{
+    change: [category: string];
+    contextmenu: [payload: { category: string; clientX: number; clientY: number }];
+}>();
 
 const allCategories = computed(() => ['All Images', ...props.categories]);
 </script>

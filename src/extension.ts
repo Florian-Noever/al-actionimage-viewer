@@ -8,6 +8,11 @@ interface ExportImagePayload {
 	base64: string;
 }
 
+interface ExportCategoryPayload {
+	category: string;
+	images: ExportImagePayload[];
+}
+
 export const EXTENSION = 'al-actionimage-viewer';
 export const EXTENSION_NAME = 'AL ActionImage Viewer';
 export const COMMAND_OPEN = 'open';
@@ -32,6 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
 		panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'assets', 'icon.svg');
 		panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
 		panel.webview.onDidReceiveMessage(async (msg) => {
+			log.info(`Received message from webview: ${JSON.stringify(msg)}`);
+
 			if (msg?.type === 'ready' || msg?.type === 'retry') {
 				panel.webview.postMessage({ type: 'loading', payload: { message: 'Loading images…' } });
 
@@ -77,6 +84,11 @@ export function activate(context: vscode.ExtensionContext) {
 				await exportImage(msg);
 				return;
 			}
+
+			if (msg?.type === 'export-category') {
+				await exportCategory(msg);
+				return;
+			}
 		});
 	});
 	context.subscriptions.push(disposable);
@@ -111,6 +123,46 @@ function getNonce() {
 		text += possible.charAt(Math.floor(Math.random() * possible.length));
 	}
 	return text;
+}
+
+async function exportCategory(msg: { type: string; payload?: ExportCategoryPayload }) {
+	try {
+		const { category, images } = msg.payload ?? {};
+		if (!category || !images?.length) {
+			throw new Error('Missing category export payload');
+		}
+
+		const folderUris = await vscode.window.showOpenDialog({
+			canSelectFolders: true,
+			canSelectFiles: false,
+			canSelectMany: false,
+			openLabel: 'Export Here',
+			title: `Export images for "${category}"`,
+		});
+		if (!folderUris || folderUris.length === 0) { return; }
+		const folderUri = folderUris[0];
+
+		const extMap: Record<string, string> = {
+			'image/png': 'png', 'image/jpeg': 'jpg',
+			'image/gif': 'gif', 'image/bmp': 'bmp', 'image/webp': 'webp',
+		};
+
+		let written = 0;
+		for (const img of images) {
+			if (!img.name || !img.mime || !img.base64) { continue; }
+			const ext = extMap[img.mime] ?? 'png';
+			const fileUri = vscode.Uri.joinPath(folderUri, `${img.name}.${ext}`);
+			const buf = Buffer.from(img.base64, 'base64');
+			await vscode.workspace.fs.writeFile(fileUri, buf);
+			written++;
+		}
+
+		vscode.window.showInformationMessage(
+			`Exported ${written} image${written !== 1 ? 's' : ''} to: ${folderUri.fsPath}`
+		);
+	} catch (err: unknown) {
+		vscode.window.showErrorMessage(`Export failed: ${err instanceof Error ? err.message : String(err)}`);
+	}
 }
 
 async function exportImage(msg: { type: string; payload?: ExportImagePayload }) {
