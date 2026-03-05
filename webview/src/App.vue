@@ -39,8 +39,10 @@
                     :tile-h="tileH"
                     :img-size="imgSize"
                     :gap="GAP"
+                    :selected-name="selectedName"
                     @contextmenu="openCtxMenu"
                     @zoom-step="step => applyZoom(zoom + step * ZOOM_STEP)"
+                    @select="onSelectItem"
                 />
             </div>
         </main>
@@ -81,6 +83,13 @@ const { debugActive } = useDebug();
 
 // ---- Zoom ----
 const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
+
+// ---- Selection ----
+const selectedName = ref<string | null>(null);
+
+function onSelectItem(item: ImageInformationDTO): void {
+    selectedName.value = selectedName.value === item.name ? null : item.name;
+}
 
 // ---- Data state ----
 const data = ref<ImageMap>({});
