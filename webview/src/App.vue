@@ -4,6 +4,7 @@
             :categories="categories"
             :active="activeCategory"
             @change="setCategory"
+            @contextmenu="openCatCtxMenu"
         />
 
         <main class="content">
@@ -56,6 +57,15 @@
             @close="ctx.visible = false"
         />
 
+        <CategoryContextMenu
+            :visible="catCtx.visible"
+            :x="catCtx.x"
+            :y="catCtx.y"
+            :category="catCtx.category"
+            @action="onCatCtxAction"
+            @close="catCtx.visible = false"
+        />
+
         <div v-if="debugActive" class="debug-badge" title="Debug borders ON — Ctrl+Shift+D to toggle">
             ⬡ DEBUG
         </div>
@@ -69,6 +79,7 @@ import SearchHeader from './components/SearchHeader.vue';
 import ImageGrid from './components/ImageGrid.vue';
 import StatusPane from './components/StatusPane.vue';
 import ContextMenu from './components/ContextMenu.vue';
+import CategoryContextMenu from './components/CategoryContextMenu.vue';
 import { useZoom, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './composables/useZoom';
 import { useSearch } from './composables/useSearch';
 import { useDebug } from './composables/useDebug';
@@ -88,7 +99,8 @@ const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
 const selectedName = ref<string | null>(null);
 
 function onSelectItem(item: ImageInformationDTO): void {
-    selectedName.value = selectedName.value === item.name ? null : item.name;
+    const name = item.name ?? null;
+    selectedName.value = selectedName.value === name ? null : name;
 }
 
 // ---- Data state ----
@@ -136,6 +148,51 @@ function openCtxMenu(payload: { item: ImageInformationDTO; clientX: number; clie
     ctx.x = payload.clientX;
     ctx.y = payload.clientY;
     ctx.visible = true;
+}
+
+// ---- Category context menu ----
+const catCtx = reactive<{
+    visible: boolean;
+    x: number;
+    y: number;
+    category: string | null;
+}>({ visible: false, x: 0, y: 0, category: null });
+
+function openCatCtxMenu(payload: { category: string; clientX: number; clientY: number }): void {
+    catCtx.category = payload.category;
+    catCtx.x = payload.clientX;
+    catCtx.y = payload.clientY;
+    catCtx.visible = true;
+}
+
+async function onCatCtxAction(action: string, category: string): Promise<void> {
+    try {
+        if (action === 'copy-name') {
+            await navigator.clipboard.writeText(category);
+            notify('info', `Copied: ${category}`);
+        }
+        if (action === 'export-images') {
+            const items = category === 'All Images'
+                ? Object.values(data.value).flat()
+                : (data.value[category] ?? []);
+            const images = items
+                .filter(item => !!item.imageDataUrl)
+                .map(item => {
+                    const parsed = parseDataUrl(item.imageDataUrl ?? '');
+                    if (!parsed) { return null; }
+                    const safeName = (item.name ?? 'image').replace(/[\\/:*?"<>|]/g, '_');
+                    return { name: safeName, mime: parsed.mime, base64: parsed.base64 };
+                })
+                .filter(Boolean);
+            if (images.length === 0) {
+                notify('warning', 'No images to export in this category.');
+                return;
+            }
+            postMessage({ type: 'export-category', payload: { category, images } });
+        }
+    } catch (err: unknown) {
+        notify('error', err instanceof Error ? err.message : String(err));
+    }
 }
 
 async function onCtxAction(action: string, item: ImageInformationDTO): Promise<void> {
