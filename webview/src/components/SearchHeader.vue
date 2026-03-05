@@ -6,6 +6,7 @@
         </div>
 
         <div class="search">
+            <span class="icon" v-html="inlineSvg(searchIcon)" aria-hidden="true"></span>
             <input
                 ref="searchInputRef"
                 type="text"
@@ -15,11 +16,15 @@
                 spellcheck="false"
                 @input="onSearchInput"
             />
-            <button title="Clear search" aria-label="Clear search" @click="onClear">✕</button>
+            <button title="Clear search" aria-label="Clear search" @click="onClear">
+                <span class="icon" v-html="inlineSvg(closeIcon)" aria-hidden="true"></span>
+            </button>
         </div>
 
         <div class="zoom">
-            <button title="Zoom Out (Ctrl+-)" aria-label="Zoom Out" @click="$emit('zoomOut')">−</button>
+            <button title="Zoom Out (Ctrl+-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
+                <span class="icon" v-html="inlineSvg(zoomOutIcon)" aria-hidden="true"></span>
+            </button>
             <input
                 type="range"
                 :min="zoomMin * 100"
@@ -29,7 +34,9 @@
                 aria-label="Zoom Level"
                 @input="onSlider"
             />
-            <button title="Zoom In (Ctrl+=)" aria-label="Zoom In" @click="$emit('zoomIn')">+</button>
+            <button title="Zoom In (Ctrl+=)" aria-label="Zoom In" @click="$emit('zoomIn')">
+                <span class="icon" v-html="inlineSvg(zoomInIcon)" aria-hidden="true"></span>
+            </button>
             <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
         </div>
 
@@ -38,15 +45,30 @@
             :title="sortAscending ? 'Sort: A→Z (click for Z→A)' : 'Sort: Z→A (click for A→Z)'"
             :aria-label="sortAscending ? 'Sort ascending' : 'Sort descending'"
             @click="$emit('sort')"
-        >{{ sortAscending ? 'A↑' : 'A↓' }}</button>
+        >
+            <span class="icon" v-html="inlineSvg(sortAscending ? sortAscIcon : sortDescIcon)" aria-hidden="true"></span>
+        </button>
 
-        <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">⟳</button>
+        <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">
+            <span class="icon" v-html="inlineSvg(reloadIcon)" aria-hidden="true"></span>
+        </button>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { debounce } from '../utils';
+import closeIcon from '../assets/close.svg?raw';
+import searchIcon from '../assets/search.svg?raw';
+import reloadIcon from '../assets/refresh.svg?raw';
+import sortAscIcon from '../assets/sort_by_alpha_asc.svg?raw';
+import sortDescIcon from '../assets/sort_by_alpha_desc.svg?raw';
+import zoomInIcon from '../assets/zoom_in.svg?raw';
+import zoomOutIcon from '../assets/zoom_out.svg?raw';
+
+function inlineSvg(raw: string): string {
+    return raw.replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"');
+}
 
 const props = defineProps<{
     title: string;
@@ -179,16 +201,34 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     opacity: 0.8;
 }
 
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    pointer-events: none;
+    color: inherit;
+}
+
+.icon :deep(svg) {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
 .search button {
     appearance: none;
     border: none;
     background: transparent;
     color: var(--vscode-foreground);
     cursor: pointer;
-    font-size: 14px;
     line-height: 1;
     padding: 2px 4px;
     border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .search button:hover {
@@ -206,14 +246,17 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .zoom button {
-    min-width: 24px;
+    width: 24px;
     height: 24px;
-    padding: 0 6px;
+    padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
     color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
     border-radius: 4px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .zoom button:hover {
@@ -239,23 +282,17 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     z-index: 2;
     flex-shrink: 0;
     margin-left: 8px;
+    width: 28px;
     height: 24px;
-    padding: 0 6px;
+    padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
     color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
     border-radius: 4px;
     cursor: pointer;
-    line-height: 1;
-    font-size: 12px;
-    white-space: nowrap;
-}
-
-.reload {
-    min-width: 28px;
-    width: 28px;
-    padding: 0;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sort:hover,
