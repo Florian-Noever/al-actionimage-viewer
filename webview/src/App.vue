@@ -15,10 +15,12 @@
                 :zoom-max="ZOOM_MAX"
                 :zoom-step="ZOOM_STEP"
                 :search-query="searchQuery"
+                :sort-ascending="sortAscending"
                 @zoom-in="zoomIn"
                 @zoom-out="zoomOut"
                 @zoom-set="applyZoom"
                 @reload="requestReload"
+                @sort="toggleSort"
                 @search="searchQuery = $event"
             />
 
@@ -86,7 +88,7 @@ const categories = ref<string[]>([]);
 const activeCategory = ref('All Images');
 
 // ---- Search ----
-const { searchQuery, currentItems } = useSearch(data, categories, activeCategory);
+const { searchQuery, currentItems, sortAscending, toggleSort } = useSearch(data, categories, activeCategory);
 
 let devTimer: ReturnType<typeof setTimeout> | undefined;
 
