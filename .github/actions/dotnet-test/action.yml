@@ -1,0 +1,12 @@
+name: "Run .NET unit tests"
+description: "Runs dotnet test for the ImageInformationProvider solution"
+inputs:
+  solution:
+    description: "Path to the solution folder containing the test projects"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      run: dotnet test "${{ inputs.solution }}" --nologo --logger "console;verbosity=normal"
+      shell: bash
