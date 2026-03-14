@@ -52,7 +52,10 @@ public static class NAVImageInformationProvider
             return null;
         var extensions = Directory.GetDirectories(vscodeExtensionsFolder);
         var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)) ?? string.Empty;
-        var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", "win32", NavTypeHelper.FullNavCodeAnalysisDllName);
+        var platform = OperatingSystem.IsWindows() ? "win32"
+                     : OperatingSystem.IsMacOS() ? "darwin"
+                     : "linux";
+        var codeAnalysisDll = Path.Combine(alExtensionPath, "bin", platform, NavTypeHelper.FullNavCodeAnalysisDllName);
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
 
