@@ -66,7 +66,7 @@
             @close="catCtx.visible = false"
         />
 
-        <div v-if="debugActive" class="debug-badge" title="Debug borders ON — click or Ctrl+Shift+D to toggle" @click="toggleDebug">
+        <div v-if="debugActive" class="debug-badge" title="Debug borders ON - click or Ctrl+Shift+D to toggle" @click="toggleDebug">
             <img :src="hexagonSrc" class="debug-hex" alt="" />
             DEBUG
         </div>
@@ -117,11 +117,11 @@ let devTimer: ReturnType<typeof setTimeout> | undefined;
 
 // ---- Loading / error state ----
 const loading = ref(false);
-const loadingMessage = ref('Loading images…');
+const loadingMessage = ref('Loading images...');
 const hasError = ref(false);
 const errorMessage = ref('');
 
-function showLoading(message = 'Loading…'): void {
+function showLoading(message = 'Loading...'): void {
     hasError.value = false;
     loadingMessage.value = message;
     loading.value = true;
@@ -181,7 +181,9 @@ async function onCatCtxAction(action: string, category: string): Promise<void> {
                 .filter(item => !!item.imageDataUrl)
                 .map(item => {
                     const parsed = parseDataUrl(item.imageDataUrl ?? '');
-                    if (!parsed) { return null; }
+                    if (!parsed) {
+                        return null;
+                    }
                     const safeName = (item.name ?? 'image').replace(/[\\/:*?"<>|]/g, '_');
                     return { name: safeName, mime: parsed.mime, base64: parsed.base64 };
                 })
@@ -217,7 +219,9 @@ async function onCtxAction(action: string, item: ImageInformationDTO): Promise<v
         }
         if (action === 'export-image') {
             const parsed = parseDataUrl(src);
-            if (!parsed) { throw new Error('Invalid image data.'); }
+            if (!parsed) {
+                throw new Error('Invalid image data.');
+            }
             const safeName = name.replace(/[\\/:*?"<>|]/g, '_');
             postMessage({ type: 'export-image', payload: { name: safeName, mime: parsed.mime, base64: parsed.base64 } });
         }
@@ -233,16 +237,18 @@ function setCategory(cat: string): void {
 
 // ---- Reload ----
 function requestReload(): void {
-    showLoading('Reloading…');
+    showLoading('Reloading...');
     postMessage({ type: 'retry' });
 }
 
 // ---- Message handler ----
 function onMessage(evt: MessageEvent): void {
-    if (!evt.data || typeof evt.data.type !== 'string') { return; }
+    if (!evt.data || typeof evt.data.type !== 'string') {
+        return;
+    }
     const { type, payload } = evt.data as { type: string; payload: unknown };
     if (type === 'loading') {
-        showLoading((payload as { message?: string })?.message || 'Loading…');
+        showLoading((payload as { message?: string })?.message || 'Loading...');
     }
     if (type === 'error') {
         showError((payload as { message?: string })?.message || 'Failed to load.');
@@ -269,7 +275,7 @@ onMounted(() => {
     window.addEventListener('keydown', onKeydown);
 
     // Signal extension we're ready
-    showLoading('Loading images…');
+    showLoading('Loading images...');
     postMessage({ type: 'ready' });
 
     // Dev fallback: demo data when running in plain browser

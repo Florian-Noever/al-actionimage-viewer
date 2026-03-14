@@ -99,7 +99,9 @@ let anchorIndex: number | null = null;
 let anchorTimer: ReturnType<typeof setTimeout> | null = null;
 
 function getCurrentTopIndex(): number {
-    if (!scrollerRef.value || props.items.length === 0) { return 0; }
+    if (!scrollerRef.value || props.items.length === 0) {
+        return 0;
+    }
     const row = Math.max(0, Math.floor(scrollerRef.value.scrollTop / props.tileH));
     return Math.min(row * columns.value, props.items.length - 1);
 }
@@ -119,13 +121,19 @@ watch([() => props.tileW, () => props.tileH], () => {
         return;
     }
 
-    if (anchorIndex === null) { anchorIndex = getCurrentTopIndex(); }
-    if (anchorTimer) { clearTimeout(anchorTimer); }
+    if (anchorIndex === null) {
+        anchorIndex = getCurrentTopIndex();
+    }
+    if (anchorTimer) {
+        clearTimeout(anchorTimer);
+    }
     anchorTimer = setTimeout(() => { anchorIndex = null; anchorTimer = null; }, 1000);
 
     const captured = anchorIndex;
     nextTick(() => {
-        if (captured === null) { return; }
+        if (captured === null) {
+            return;
+        }
         const row = Math.floor(captured / columns.value);
         rowVirtualizer.value.scrollToIndex(row, { align: 'start' });
     });

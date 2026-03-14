@@ -31,7 +31,11 @@ export async function handleExportImage(msg: { payload?: ExportImagePayload }): 
         const buf = Buffer.from(base64, 'base64');
         await vscode.workspace.fs.writeFile(uri, buf);
         vscode.window.showInformationMessage(`Saved: ${uri.fsPath}`);
-    } catch (err: unknown) {
-        vscode.window.showErrorMessage(`Export failed: ${err instanceof Error ? err.message : String(err)}`);
+    } catch (e) {
+        if (e instanceof Error) {
+            throw new Error(`Export Image failed: ${e.message}`, { cause: e });
+        }
+
+        throw new Error(`Export Image failed: ${String(e)}`);
     }
 }

@@ -27,7 +27,6 @@ class BinaryReader {
         this.ensure(len);
         const slice = this.buf.subarray(this.offset, this.offset + len);
         this.offset += len;
-        // Return a view; copy if you prefer: return new Uint8Array(slice);
         return slice;
     }
 
@@ -129,8 +128,8 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
 export async function readFromBridgeStdout(bridgeExePath: string, args: string[] = []): Promise<Record<string, ImageInformation[]>> {
     return new Promise((resolve, reject) => {
         const child = spawn(bridgeExePath, args, {
-            stdio: ['ignore', 'pipe', 'pipe'], // read stdout, show stderr in this process
-            windowsHide: true, // like CreateNoWindow/Hidden
+            stdio: ['ignore', 'pipe', 'pipe'], // read stdout, show stderr
+            windowsHide: true,
         });
 
         const chunks: Buffer[] = [];
@@ -141,8 +140,7 @@ export async function readFromBridgeStdout(bridgeExePath: string, args: string[]
         child.once('close', (code) => {
             try {
                 if (code !== 0 && code !== null) {
-                    // Non-zero exit isn't necessarily fatal for parsing; but surface it.
-                    // We still try to parse whatever we got.
+                    // Non-zero exit isn't necessarily fatal, so continue
                 }
                 const buf = Buffer.concat(chunks);
                 const result = parseBridgePayload(buf);
