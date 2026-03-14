@@ -14,6 +14,12 @@
     <TrimmerRootAssembly Include="System.Collections.Immutable" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>AL-ActionImage-Viewer.ImageInformationProvider.Test.Unit</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
   <Target Name="CopyToExtensionBin" AfterTargets="Publish">
     <PropertyGroup>
       <ExtensionBinRoot>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '..', '..', 'bin'))))</ExtensionBinRoot>

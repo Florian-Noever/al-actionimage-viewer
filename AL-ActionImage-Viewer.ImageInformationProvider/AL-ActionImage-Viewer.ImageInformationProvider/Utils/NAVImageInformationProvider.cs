@@ -5,22 +5,45 @@ using AL_ActionImage_Viewer.ImageInformationProvider.Data;
 
 namespace AL_ActionImage_Viewer.ImageInformationProvider.Utils;
 
+/// <summary>
+/// Locates and reflects against the AL Language extension DLL
+/// (<c>Microsoft.Dynamics.Nav.CodeAnalysis.dll</c>) to extract all action
+/// image resources grouped by category.
+/// </summary>
 public static class NAVImageInformationProvider
 {
+    /// <summary>The VS Code marketplace extension identifier for the AL Language extension.</summary>
     public const string ALExtensionId = "ms-dynamics-smb.al";
 
+    /// <summary>
+    /// Returns all image groups discovered in the AL extension DLL, keyed by category name.
+    /// Returns an empty dictionary if the extension is not installed or the DLL cannot be loaded.
+    /// </summary>
     public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages() => GetAllImagesLocal();
 
+    /// <summary>Returns images from the <c>GetActionImageResources</c> method.</summary>
     public static IEnumerable<ImageInformationDTO> GetActionImages() => GetImagesLocal(NavTypeHelper.GetActionImageResourcesMethodName);
 
+    /// <summary>Returns images from the <c>GetFieldCueGroupImageResources</c> method.</summary>
     public static IEnumerable<ImageInformationDTO> GetFieldCueGroupImages() => GetImagesLocal(NavTypeHelper.GetFieldCueGroupImageResourcesMethodName);
 
+    /// <summary>Returns images from the <c>GetActionCueGroupImageResources</c> method.</summary>
     public static IEnumerable<ImageInformationDTO> GetActionCueGroupImages() => GetImagesLocal(NavTypeHelper.GetActionCueGroupImageResourcesMethodName);
 
+    /// <summary>Returns images from the <c>GetRoleCenterActionGroupImageResources</c> method.</summary>
     public static IEnumerable<ImageInformationDTO> GetRoleCenterActionImages() => GetImagesLocal(NavTypeHelper.GetRoleCenterActionGroupImageResourcesMethodName);
 
+    /// <summary>
+    /// Returns <see langword="true"/> if the AL Language extension DLL can be located
+    /// on the local machine; <see langword="false"/> otherwise.
+    /// </summary>
     public static bool IsALExtensionInstalled() => GetMicrosoftDynamicsNavCodeAnalysisDllPath() is not null;
 
+    /// <summary>
+    /// Searches the VS Code extensions folder for the AL Language extension and returns
+    /// the full path to <c>Microsoft.Dynamics.Nav.CodeAnalysis.dll</c>, or
+    /// <see langword="null"/> if it cannot be found.
+    /// </summary>
     public static string? GetMicrosoftDynamicsNavCodeAnalysisDllPath()
     {
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -33,6 +56,12 @@ public static class NAVImageInformationProvider
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
 
+    /// <summary>
+    /// Loads the DLL, invokes a single named resource method by reflection, and
+    /// converts the resulting dictionary into a list of <see cref="ImageInformationDTO"/>.
+    /// Returns an empty list on any error.
+    /// </summary>
+    /// <param name="methodName">The name of the static method to invoke on <c>ImageResources</c>.</param>
     private static List<ImageInformationDTO> GetImagesLocal(string methodName)
     {
         var imagesList = new List<ImageInformationDTO>();
@@ -65,6 +94,11 @@ public static class NAVImageInformationProvider
         return imagesList;
     }
 
+    /// <summary>
+    /// Discovers all static methods on <c>ImageResources</c> that return
+    /// <c>IDictionary&lt;string, string&gt;</c> and invokes each one to build
+    /// the full image groups dictionary. Errors per-method are logged and skipped.
+    /// </summary>
     private static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImagesLocal()
     {
         var imageGroupsDict = new Dictionary<string, IEnumerable<ImageInformationDTO>>();
@@ -118,6 +152,12 @@ public static class NAVImageInformationProvider
         return imageGroupsDict;
     }
 
+    /// <summary>
+    /// Eagerly runs the static constructor of <c>ImageResources</c> via
+    /// <see cref="RuntimeHelpers.RunClassConstructor"/> so that any missing-type
+    /// errors surface with useful diagnostics before the first method invocation.
+    /// </summary>
+    /// <param name="dllPath">Absolute path to the AL Code Analysis DLL.</param>
     private static void LoadCheckCTor(string dllPath)
     {
         try
@@ -145,6 +185,13 @@ public static class NAVImageInformationProvider
         }
     }
 
+    /// <summary>
+    /// Converts a raw <c>IDictionary&lt;string, string&gt;</c> (name → URI-encoded image string)
+    /// returned by the AL extension into a strongly-typed list of <see cref="ImageInformationDTO"/>.
+    /// Entries that do not yet start with <c>"data:"</c> are prefixed with the PNG data-URL header.
+    /// </summary>
+    /// <param name="imagesDictionary">Raw dictionary from the AL DLL reflection call.</param>
+    /// <param name="category">Category name derived from the method name.</param>
     private static List<ImageInformationDTO> FromImagesDictionary(IDictionary<string, string> imagesDictionary, string category)
     {
         var imageType = "data:image/png;base64,";

@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="AL-ActionImage-Viewer.ImageInformationProvider.Test.Unit/AL-ActionImage-Viewer.ImageInformationProvider.Test.Unit.csproj" Id="9d11a76e-ae7d-49c1-a606-285bb88b8897" />
   <Project Path="AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj" />
 </Solution>
