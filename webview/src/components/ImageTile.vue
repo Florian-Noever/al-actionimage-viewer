@@ -45,11 +45,19 @@ function onTileClick(): void {
 const upscaled = computed(() => props.imgSize >= ORIGINAL_IMG_SIZE);
 
 function onDragStart(e: DragEvent): void {
-    if (!e.dataTransfer || !props.item.imageDataUrl) { return; }
+    if (!e.dataTransfer || !props.item.imageDataUrl) {
+        return;
+    }
     const src = props.item.imageDataUrl;
     const mimeMatch = src.match(/^data:([^;]+);/);
     const mime = mimeMatch ? mimeMatch[1] : 'image/png';
-    const extMap: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/bmp': 'bmp', 'image/webp': 'webp' };
+    const extMap: Record<string, string> = {
+        'image/png': 'png',
+        'image/jpeg': 'jpg',
+        'image/gif': 'gif',
+        'image/bmp': 'bmp',
+        'image/webp': 'webp'
+    };
     const ext = extMap[mime] ?? 'png';
     const safeName = (props.item.name ?? 'image').replace(/[\\/:*?"<>|]/g, '_');
     e.dataTransfer.setData('DownloadURL', `${mime}:${safeName}.${ext}:${src}`);

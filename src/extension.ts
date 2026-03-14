@@ -31,20 +31,25 @@ export function activate(context: vscode.ExtensionContext) {
 		panel.webview.onDidReceiveMessage(async (msg) => {
 			log.info(`Received message from webview: ${JSON.stringify(msg)}`);
 
-			switch (msg?.type) {
-				case 'ready':
-				case 'retry':
-					await handleLoadImages(context, panel);
-					break;
-				case 'notify':
-					handleNotify(msg);
-					break;
-				case 'export-image':
-					await handleExportImage(msg);
-					break;
-				case 'export-category':
-					await handleExportCategory(msg);
-					break;
+			try {
+				switch (msg?.type) {
+					case 'ready':
+					case 'retry':
+						await handleLoadImages(context, panel);
+						break;
+					case 'notify':
+						handleNotify(msg);
+						break;
+					case 'export-image':
+						await handleExportImage(msg);
+						break;
+					case 'export-category':
+						await handleExportCategory(msg);
+						break;
+				}
+			} catch (e) {
+				log.error(`Error handling message of type "${msg?.type}": ${e instanceof Error ? e.message : String(e)}`);
+				vscode.window.showErrorMessage(e instanceof Error ? e.message : String(e));
 			}
 		});
 	});
@@ -81,4 +86,3 @@ function getNonce() {
 	}
 	return text;
 }
-

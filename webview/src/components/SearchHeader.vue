@@ -138,7 +138,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     overflow: hidden;
 }
 
-/* Title + count — collapse first when space is tight */
+/* Title + count - collapse first when space is tight */
 .title-group {
     display: flex;
     align-items: baseline;
@@ -167,7 +167,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     overflow: hidden;
 }
 
-/* Search — grows to fill space, shrinks to minimum, capped at max */
+/* Search - grows to fill space, shrinks to minimum, capped at max */
 .search {
     flex: 1 1 auto;
     min-width: 150px;

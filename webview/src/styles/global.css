@@ -1,6 +1,6 @@
 :root {
     /*
-     * VS Code dark theme defaults — only visible in the Vite dev server.
+     * VS Code dark theme defaults - only visible in the Vite dev server.
      * When the webview runs inside VS Code, the extension host injects the real
      * theme values directly on <body>, which override these via CSS inheritance.
      */
@@ -42,7 +42,7 @@
     --base-tile-h: 120;
     --base-img: 48;
 
-    /* live sizes — updated by useZoom */
+    /* live sizes - updated by useZoom */
     --tile-w: calc(var(--base-tile-w) * 1px);
     --tile-h: calc(var(--base-tile-h) * 1px);
     --img: calc(var(--base-img) * 1px);
@@ -79,7 +79,7 @@ button:focus-visible {
     box-shadow: none !important;
 }
 
-/* ── Debug borders (toggled by Ctrl+Shift+D) ─────────────────────────── */
+/* -- Debug borders (toggled by Ctrl+Shift+D) --------------------------- */
 html.debug-borders *:not(img):not(svg):not(path):not(circle):not(rect) {
     outline: 1px solid rgba(255, 0, 128, 0.45) !important;
 }

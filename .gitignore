@@ -287,7 +287,7 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
-# VS Code extension — compiled output
+# VS Code extension - compiled output
 out/
 
 # Vite webview build output (source of truth: webview/src/)

@@ -19,7 +19,7 @@ const EXT_MAP: Record<string, string> = {
     'image/webp': 'webp',
 };
 
-export async function handleExportCategory(msg: { payload?: ExportCategoryPayload }): Promise<void> {
+export async function handleExportCategory(msg: { payload?: ExportCategoryPayload; }): Promise<void> {
     try {
         const { category, images } = msg.payload ?? {};
         if (!category || !images?.length) {
@@ -49,7 +49,9 @@ export async function handleExportCategory(msg: { payload?: ExportCategoryPayloa
                 progress.report({ increment: 0, message: `0 / ${total}` });
 
                 for (const img of images) {
-                    if (!img.name || !img.mime || !img.base64) { continue; }
+                    if (!img.name || !img.mime || !img.base64) {
+                        continue;
+                    }
                     const ext = EXT_MAP[img.mime] ?? 'png';
                     const fileUri = vscode.Uri.joinPath(folderUri, `${img.name}.${ext}`);
                     const buf = Buffer.from(img.base64, 'base64');
@@ -64,7 +66,11 @@ export async function handleExportCategory(msg: { payload?: ExportCategoryPayloa
         );
 
         vscode.window.showInformationMessage(`Exported ${written} image${written !== 1 ? 's' : ''} to: ${folderUri.fsPath}`);
-    } catch (err: unknown) {
-        vscode.window.showErrorMessage(`Export failed: ${err instanceof Error ? err.message : String(err)}`);
+    } catch (e) {
+        if (e instanceof Error) {
+            throw new Error(`Export Category failed: ${e.message}`, { cause: e });
+        }
+
+        throw new Error(`Export Category failed: ${String(e)}`);
     }
 }

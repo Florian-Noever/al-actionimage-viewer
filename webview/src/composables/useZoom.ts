@@ -13,12 +13,16 @@ const zoom = ref(1.0);
 
 function applyZoom(newZoom: number): void {
     newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +newZoom));
-    if (!isFinite(newZoom) || newZoom === zoom.value) { return; }
+    if (!isFinite(newZoom) || newZoom === zoom.value) {
+        return;
+    }
     zoom.value = newZoom;
     document.documentElement.style.setProperty('--tile-w', Math.round(BASE_TILE_W * newZoom) + 'px');
     document.documentElement.style.setProperty('--tile-h', Math.round(BASE_TILE_H * newZoom) + 'px');
     document.documentElement.style.setProperty('--img', Math.round(BASE_IMG * newZoom) + 'px');
-    try { setState({ zoom: newZoom }); } catch { /* swallow */ }
+    try {
+        setState({ zoom: newZoom });
+    } catch { /* swallow */ }
 }
 
 function zoomIn(): void { applyZoom(zoom.value + ZOOM_STEP); }
@@ -31,12 +35,25 @@ const imgSize = computed(() => Math.round(BASE_IMG * zoom.value));
 
 function setupKeyboardHandlers(): () => void {
     function onKeydown(e: KeyboardEvent): void {
-        if (e.ctrlKey || e.metaKey || e.altKey) { return; }
+        if (e.ctrlKey || e.metaKey || e.altKey) {
+            return;
+        }
         const tag = (e.target as HTMLElement)?.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') { return; }
-        if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(); }
-        if (e.key === '-') { e.preventDefault(); zoomOut(); }
-        if (e.key === '0') { e.preventDefault(); resetZoom(); }
+        if (tag === 'INPUT' || tag === 'TEXTAREA') {
+            return;
+        }
+        if (e.key === '=' || e.key === '+') {
+            e.preventDefault();
+            zoomIn();
+        }
+        if (e.key === '-') {
+            e.preventDefault();
+            zoomOut();
+        }
+        if (e.key === '0') {
+            e.preventDefault();
+            resetZoom();
+        }
     }
     window.addEventListener('keydown', onKeydown);
     return () => window.removeEventListener('keydown', onKeydown);

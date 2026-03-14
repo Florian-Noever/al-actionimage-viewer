@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { getImageInformations } from '../utils/imageInformationProvider';
 
 export async function handleLoadImages(context: vscode.ExtensionContext, panel: vscode.WebviewPanel): Promise<void> {
-    panel.webview.postMessage({ type: 'loading', payload: { message: 'Loading images…' } });
+    panel.webview.postMessage({ type: 'loading', payload: { message: 'Loading images...' } });
 
     try {
         const imageGroups = await getImageInformations(context);
@@ -17,10 +17,10 @@ export async function handleLoadImages(context: vscode.ExtensionContext, panel: 
         }
 
         panel.webview.postMessage({ type: 'setData', payload: imageGroups });
-    } catch (err: unknown) {
+    } catch (e) {
         panel.webview.postMessage({
             type: 'error',
-            payload: { message: `Failed to load images: ${err instanceof Error ? err.message : String(err)}` }
+            payload: { message: `Failed to load images: ${e instanceof Error ? e.message : String(e)}` }
         });
     }
 }

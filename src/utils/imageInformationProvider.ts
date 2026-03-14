@@ -10,6 +10,7 @@ enum Platform {
 }
 
 let executableBitSet = false;
+const exeName = 'AL-ActionImage-Viewer.ImageInformationProvider';
 
 function platformFolder(): Platform {
     switch (process.platform) {
@@ -28,8 +29,8 @@ function getImageInfoProviderPath(context: vscode.ExtensionContext): string {
     const folder = platformFolder();
     const file =
         folder === Platform.Windows
-            ? 'AL-ActionImage-Viewer.ImageInformationProvider.exe'
-            : 'AL-ActionImage-Viewer.ImageInformationProvider';
+            ? exeName + '.exe'
+            : exeName; // No extension on Unix-based platforms
 
     const uri = vscode.Uri.joinPath(context.extensionUri, 'bin', folder, file);
     return uri.fsPath;
@@ -38,7 +39,7 @@ function getImageInfoProviderPath(context: vscode.ExtensionContext): string {
 export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformation[]>> {
     const path = getImageInfoProviderPath(context);
 
-    // Ensure the binary is executable on non-Windows platforms (only needs to happen once)
+    // Ensure the binary is executable on non-Windows platforms
     if (process.platform !== 'win32' && !executableBitSet) {
         fs.chmodSync(path, 0o755); // +x
         executableBitSet = true;

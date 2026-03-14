@@ -39,11 +39,15 @@ const menuStyle = computed(() => ({
 }));
 
 watch(() => props.visible, async (v) => {
-    if (!v) { return; }
+    if (!v) {
+        return;
+    }
     menuX.value = props.x;
     menuY.value = props.y;
     await nextTick();
-    if (!menuRef.value) { return; }
+    if (!menuRef.value) {
+        return;
+    }
     const rect = menuRef.value.getBoundingClientRect();
     if (menuX.value + rect.width > window.innerWidth) {
         menuX.value = window.innerWidth - rect.width - 4;
@@ -54,7 +58,9 @@ watch(() => props.visible, async (v) => {
 });
 
 function doAction(action: string): void {
-    if (props.category !== null) { emit('action', action, props.category); }
+    if (props.category !== null) {
+        emit('action', action, props.category);
+    }
     emit('close');
 }
 
@@ -65,7 +71,9 @@ function onMousedown(e: MouseEvent): void {
 }
 
 function onScroll(): void {
-    if (props.visible) { emit('close'); }
+    if (props.visible) {
+        emit('close');
+    }
 }
 
 onMounted(() => {

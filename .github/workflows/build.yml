@@ -50,7 +50,7 @@ jobs:
                 echo "❌ Directory is empty: $dir"
                 missing=1
               else
-                echo "✅ $dir — $(ls $dir)"
+                echo "✅ $dir - $(ls $dir)"
               fi
             fi
           done
