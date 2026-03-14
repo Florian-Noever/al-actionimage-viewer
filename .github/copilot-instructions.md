@@ -1,4 +1,4 @@
-# AL ActionImage Viewer — Copilot Instructions
+# AL ActionImage Viewer - Copilot Instructions
 
 ## Project Overview
 
@@ -15,7 +15,7 @@ al-actionimage-viewer/
 
 ---
 
-## Layer 1 — C# Bridge (`AL-ActionImage-Viewer.ImageInformationProvider/`)
+## Layer 1 - C# Bridge (`AL-ActionImage-Viewer.ImageInformationProvider/`)
 
 ### Purpose
 A self-contained .NET 10 console application that locates, loads, and reflects on the AL Language extension's `Microsoft.Dynamics.Nav.CodeAnalysis.dll` to extract all action image resources.  
@@ -24,7 +24,7 @@ It writes the result as a **custom binary payload to stdout**, then exits.
 ### Key Files
 | File | Role |
 |------|------|
-| `Program.cs` | Entry point — calls `BridgeWriteProvider.Write()` |
+| `Program.cs` | Entry point - calls `BridgeWriteProvider.Write()` |
 | `Utils/NAVImageInformationProvider.cs` | Finds the AL extension DLL, loads it via `Assembly.LoadFrom`, discovers image resource methods via reflection |
 | `Utils/BridgeWriteProvider.cs` | Serialises discovered images into the binary wire protocol and writes them to stdout |
 | `Utils/NavTypeHelper.cs` | Constants for the AL DLL type/method names |
@@ -70,7 +70,7 @@ dotnet publish -c Release /p:PublishProfile=darwin
 
 ---
 
-## Layer 2 — VS Code Extension (`src/`)
+## Layer 2 - VS Code Extension (`src/`)
 
 ### Purpose
 The TypeScript extension activates on the `al-actionimage-viewer.open` command, creates a `WebviewPanel`, spawns the C# bridge binary, reads its binary stdout, and relays image data to the webview via `postMessage`.
@@ -80,11 +80,11 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command, 
 |------|------|
 | `extension.ts` | Activation, webview panel creation, message dispatch, CSP/nonce HTML injection |
 | `utils/imageInformationProvider.ts` | Resolves binary path per platform, sets executable bit on Unix, calls `readFromBridgeStdout` |
-| `utils/binaryReader.ts` | `BinaryReader` class + `parseBridgePayload` — mirrors the C# binary protocol exactly |
+| `utils/binaryReader.ts` | `BinaryReader` class + `parseBridgePayload` - mirrors the C# binary protocol exactly |
 | `handlers/loadImages.ts` | Spawns binary, sends `loading` → `setData` / `error` to webview |
-| `handlers/exportImage.ts` | Handles `export-image` message — shows save dialog, writes file |
-| `handlers/exportCategory.ts` | Handles `export-category` message — shows folder picker, writes all images with progress notification |
-| `handlers/notify.ts` | Handles `notify` message — shows VS Code info/warning/error messages |
+| `handlers/exportImage.ts` | Handles `export-image` message - shows save dialog, writes file |
+| `handlers/exportCategory.ts` | Handles `export-category` message - shows folder picker, writes all images with progress notification |
+| `handlers/notify.ts` | Handles `notify` message - shows VS Code info/warning/error messages |
 | `types/imageInformationDTO.ts` | TypeScript mirror of the C# DTO |
 
 ### Webview Setup
@@ -104,8 +104,8 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command, 
 **Webview → Extension:**
 | `type` | Payload | Meaning |
 |--------|---------|---------|
-| `ready` | — | Webview mounted, load images |
-| `retry` | — | User clicked retry, reload images |
+| `ready` | - | Webview mounted, load images |
+| `retry` | - | User clicked retry, reload images |
 | `notify` | `{ level, message }` | Show VS Code notification |
 | `export-image` | `{ name, mime, base64 }` | Save single image to disk |
 | `export-category` | `{ category, images[] }` | Save all images in category to folder |
@@ -120,7 +120,7 @@ npm run package          # vsce package (.vsix)
 
 ---
 
-## Layer 3 — Webview UI (`webview/`)
+## Layer 3 - Webview UI (`webview/`)
 
 ### Purpose
 A Vue 3 Single-File-Component application, built by Vite as a single **IIFE bundle** (`public/app.js` + `public/styles.css`) so it can run inside the VS Code webview sandbox with a strict CSP.
@@ -128,25 +128,25 @@ A Vue 3 Single-File-Component application, built by Vite as a single **IIFE bund
 ### Key Files & Components
 | Path | Role |
 |------|------|
-| `src/App.vue` | Root component — orchestrates state, routing between components, message handling |
+| `src/App.vue` | Root component - orchestrates state, routing between components, message handling |
 | `src/components/CategoryRail.vue` | Left sidebar listing all categories + "All Images" |
 | `src/components/SearchHeader.vue` | Search input, zoom controls, sort toggle, reload button |
 | `src/components/ImageGrid.vue` | Virtualised grid of image tiles (`@tanstack/vue-virtual`) |
-| `src/components/ImageTile.vue` | Individual tile — image, name, click to select |
+| `src/components/ImageTile.vue` | Individual tile - image, name, click to select |
 | `src/components/ContextMenu.vue` | Right-click menu for a single image (copy / export) |
 | `src/components/CategoryContextMenu.vue` | Right-click menu for a category (export all) |
 | `src/components/StatusPane.vue` | Loading spinner and error state overlay |
 | `src/composables/useZoom.ts` | Zoom level state + tile/image size derivation |
 | `src/composables/useSearch.ts` | Filtered + sorted item list computed from active category and search query |
 | `src/composables/useDebug.ts` | Debug border toggle (Ctrl+Shift+D) |
-| `src/vscode.ts` | Typed wrapper around `acquireVsCodeApi()` — safe to call in plain browser too |
+| `src/vscode.ts` | Typed wrapper around `acquireVsCodeApi()` - safe to call in plain browser too |
 | `src/utils.ts` | `makeSearchPredicate`, `parseDataUrl`, `blobFromDataUrl`, `notify` helpers |
 | `src/types/imageInformationDTO.ts` | Frontend mirror of the DTO + `ImageMap` type alias |
 
 ### Vite Build Configuration (`vite.config.ts`)
 - Root: `webview/`
 - Output: `public/` (alongside extension's `index.html`)
-- Single IIFE entry (`webview/src/main.ts`) — no code splitting
+- Single IIFE entry (`webview/src/main.ts`) - no code splitting
 - CSS merged into `styles.css`, assets inlined up to 8 KB
 
 ### Key Dependencies
@@ -172,9 +172,9 @@ App.vue mounts
 
 ## Cross-Cutting Conventions
 
-- **DTO symmetry**: `ImageInformationDTO` is defined in three places (C# `Data/`, TS `src/types/`, webview `types/`) and must stay in sync — `name`, `category`, `tags`, `imageDataUrl`.
+- **DTO symmetry**: `ImageInformationDTO` is defined in three places (C# `Data/`, TS `src/types/`, webview `types/`) and must stay in sync - `name`, `category`, `tags`, `imageDataUrl`.
 - **Binary protocol symmetry**: `BridgeWriteProvider.cs` (writer) and `binaryReader.ts` (reader) must remain byte-for-byte compatible. When changing the protocol, update both files together.
-- **Platform binaries**: The C# binary is published for `win32`, `linux`, `darwin` and stored under `bin/`. Never include runtime DLLs for the AL extension itself — the user must have the AL Language extension installed.
+- **Platform binaries**: The C# binary is published for `win32`, `linux`, `darwin` and stored under `bin/`. Never include runtime DLLs for the AL extension itself - the user must have the AL Language extension installed.
 - **CSP**: The webview HTML uses a nonce. All inline scripts must receive the nonce; no `unsafe-inline`.
 - **No VS Code API in webview**: The webview communicates only through `vscode.ts` (`postMessage` / `getState` / `setState`). Never import `vscode` in webview code.
 - **ExtensionKind `ui`**: The extension must only run on the local (UI) machine, not a remote server, because it reads the local filesystem for the AL DLL.
