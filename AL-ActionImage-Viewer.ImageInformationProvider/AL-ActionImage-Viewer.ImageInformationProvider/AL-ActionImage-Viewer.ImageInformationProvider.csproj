@@ -20,6 +20,10 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.5" />
+  </ItemGroup>
+
   <Target Name="CopyToExtensionBin" AfterTargets="Publish">
     <PropertyGroup>
       <ExtensionBinRoot>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '..', '..', 'bin'))))</ExtensionBinRoot>

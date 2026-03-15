@@ -134,7 +134,7 @@ export async function readFromBridgeStdout(bridgeExePath: string, args: string[]
 
         const chunks: Buffer[] = [];
         child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
-        child.stderr.on('data', (e) => log.info(e.toString()));
+        child.stderr.on('data', (e) => log?.info(e.toString()));
         child.once('error', reject);
 
         child.once('close', (code) => {
