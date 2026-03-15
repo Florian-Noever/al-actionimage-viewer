@@ -4,7 +4,7 @@ on:
 
 name: Build and Package Extension
 jobs:
-  test:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,16 +14,36 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
-          dotnet-quality: 'preview'
 
       - name: Run unit tests
         uses: ./.github/actions/dotnet-test
         with:
           solution: AL-ActionImage-Viewer.ImageInformationProvider
 
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: unit-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Publish bridge binary for Linux
+        uses: ./.github/actions/publish-dotnet
+        with:
+          project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
+          profile: linux
+
+      - name: Run integration tests
+        uses: ./.github/actions/vscode-test
+
   build:
     runs-on: ubuntu-latest
-    needs: test
+    needs: integration-test
     permissions:
       contents: write
     steps:
