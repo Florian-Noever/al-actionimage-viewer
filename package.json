@@ -55,7 +55,7 @@
     "dev:webview": "vite",
     "lint": "eslint src",
     "package": "npx -y @vscode/vsce package",
-    "test": "node ./out/test/runTests.js"
+    "test": "npm run compile && node ./out/test/runTests.js"
   },
   "devDependencies": {
     "@tanstack/vue-virtual": "^3.13.19",

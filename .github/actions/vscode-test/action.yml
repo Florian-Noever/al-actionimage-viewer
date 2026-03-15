@@ -1,0 +1,21 @@
+name: "Run VS Code integration tests"
+description: "Compiles the TypeScript extension and runs the Mocha integration tests inside a VS Code extension host"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+
+    - name: Compile extension
+      run: npx tsc -p ./
+      shell: bash
+
+    - name: Run integration tests
+      run: xvfb-run --auto-servernum npm run test
+      shell: bash
