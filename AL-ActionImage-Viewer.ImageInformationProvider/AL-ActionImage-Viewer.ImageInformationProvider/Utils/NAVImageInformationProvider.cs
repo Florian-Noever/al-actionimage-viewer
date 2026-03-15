@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using AL_ActionImage_Viewer.ImageInformationProvider.Data;
@@ -19,6 +20,7 @@ public static class NAVImageInformationProvider
     /// Returns all image groups discovered in the AL extension DLL, keyed by category name.
     /// Returns an empty dictionary if the extension is not installed or the DLL cannot be loaded.
     /// </summary>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages() => GetAllImagesLocal();
 
     /// <summary>
@@ -26,18 +28,23 @@ public static class NAVImageInformationProvider
     /// auto-discovering the DLL from <c>~/.vscode/extensions/</c>.
     /// </summary>
     /// <param name="dllPath">Absolute path to <c>Microsoft.Dynamics.Nav.CodeAnalysis.dll</c>.</param>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages(string dllPath) => GetAllImagesLocal(dllPath);
 
     /// <summary>Returns images from the <c>GetActionImageResources</c> method.</summary>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static IEnumerable<ImageInformationDTO> GetActionImages() => GetImagesLocal(NavTypeHelper.GetActionImageResourcesMethodName);
 
     /// <summary>Returns images from the <c>GetFieldCueGroupImageResources</c> method.</summary>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static IEnumerable<ImageInformationDTO> GetFieldCueGroupImages() => GetImagesLocal(NavTypeHelper.GetFieldCueGroupImageResourcesMethodName);
 
     /// <summary>Returns images from the <c>GetActionCueGroupImageResources</c> method.</summary>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static IEnumerable<ImageInformationDTO> GetActionCueGroupImages() => GetImagesLocal(NavTypeHelper.GetActionCueGroupImageResourcesMethodName);
 
     /// <summary>Returns images from the <c>GetRoleCenterActionGroupImageResources</c> method.</summary>
+    [UnconditionalSuppressMessage("TrimAnalysis", "IL2026:RequiresUnreferencedCode", Justification = "Intentionally reflects against the AL Language extension DLL at runtime.")]
     public static IEnumerable<ImageInformationDTO> GetRoleCenterActionImages() => GetImagesLocal(NavTypeHelper.GetRoleCenterActionGroupImageResourcesMethodName);
 
     /// <summary>
@@ -72,6 +79,7 @@ public static class NAVImageInformationProvider
     /// Returns an empty list on any error.
     /// </summary>
     /// <param name="methodName">The name of the static method to invoke on <c>ImageResources</c>.</param>
+    [RequiresUnreferencedCode("Dynamically loads and reflects against the AL Language extension DLL at runtime.")]
     private static List<ImageInformationDTO> GetImagesLocal(string methodName)
     {
         var imagesList = new List<ImageInformationDTO>();
@@ -113,6 +121,7 @@ public static class NAVImageInformationProvider
     /// Optional explicit path to the DLL. When <see langword="null"/> the path is
     /// resolved automatically via <see cref="GetMicrosoftDynamicsNavCodeAnalysisDllPath"/>.
     /// </param>
+    [RequiresUnreferencedCode("Dynamically loads and reflects against the AL Language extension DLL at runtime.")]
     private static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImagesLocal(string? dllPath = null)
     {
         var imageGroupsDict = new Dictionary<string, IEnumerable<ImageInformationDTO>>();
@@ -174,6 +183,7 @@ public static class NAVImageInformationProvider
     /// errors surface with useful diagnostics before the first method invocation.
     /// </summary>
     /// <param name="dllPath">Absolute path to the AL Code Analysis DLL.</param>
+    [RequiresUnreferencedCode("Dynamically loads and reflects against the AL Language extension DLL at runtime.")]
     private static void LoadCheckCTor(string dllPath)
     {
         try
