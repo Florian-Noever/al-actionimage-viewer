@@ -1,24 +1,24 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import pkg from '../package.json';
 import { handleLoadImages } from './handlers/loadImages';
 import { handleNotify } from './handlers/notify';
 import { handleExportImage } from './handlers/exportImage';
 import { handleExportCategory } from './handlers/exportCategory';
 
-export const EXTENSION = 'al-actionimage-viewer';
-export const EXTENSION_NAME = 'AL ActionImage Viewer';
-export const COMMAND_OPEN = 'open';
+export const MANIFEST = pkg;
+export const COMMAND_OPEN = pkg.contributes.commands[0].command;
 
 export let log: vscode.LogOutputChannel;
 
 export function activate(context: vscode.ExtensionContext) {
-	log = vscode.window.createOutputChannel(EXTENSION_NAME, { log: true });
+	log = vscode.window.createOutputChannel(MANIFEST.displayName, { log: true });
 	context.subscriptions.push(log);
 
-	const disposable = vscode.commands.registerCommand(EXTENSION + '.' + COMMAND_OPEN, async () => {
+	const disposable = vscode.commands.registerCommand(COMMAND_OPEN, async () => {
 		const panel = vscode.window.createWebviewPanel(
 			'imageBrowser',
-			EXTENSION_NAME,
+			MANIFEST.displayName,
 			vscode.ViewColumn.One,
 			{
 				enableScripts: true,
@@ -55,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 
-	log.info(`Successfully activated "${EXTENSION_NAME}" extension.`);
+	log.info(`Successfully activated "${MANIFEST.displayName}" extension.`);
 }
 
 export function deactivate() { }

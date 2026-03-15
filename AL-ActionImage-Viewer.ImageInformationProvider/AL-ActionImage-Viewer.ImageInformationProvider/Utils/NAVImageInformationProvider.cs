@@ -21,6 +21,13 @@ public static class NAVImageInformationProvider
     /// </summary>
     public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages() => GetAllImagesLocal();
 
+    /// <summary>
+    /// Returns all image groups using the explicitly supplied <paramref name="dllPath"/> instead of
+    /// auto-discovering the DLL from <c>~/.vscode/extensions/</c>.
+    /// </summary>
+    /// <param name="dllPath">Absolute path to <c>Microsoft.Dynamics.Nav.CodeAnalysis.dll</c>.</param>
+    public static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImages(string dllPath) => GetAllImagesLocal(dllPath);
+
     /// <summary>Returns images from the <c>GetActionImageResources</c> method.</summary>
     public static IEnumerable<ImageInformationDTO> GetActionImages() => GetImagesLocal(NavTypeHelper.GetActionImageResourcesMethodName);
 
@@ -102,20 +109,26 @@ public static class NAVImageInformationProvider
     /// <c>IDictionary&lt;string, string&gt;</c> and invokes each one to build
     /// the full image groups dictionary. Errors per-method are logged and skipped.
     /// </summary>
-    private static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImagesLocal()
+    /// <param name="dllPath">
+    /// Optional explicit path to the DLL. When <see langword="null"/> the path is
+    /// resolved automatically via <see cref="GetMicrosoftDynamicsNavCodeAnalysisDllPath"/>.
+    /// </param>
+    private static Dictionary<string, IEnumerable<ImageInformationDTO>> GetAllImagesLocal(string? dllPath = null)
     {
         var imageGroupsDict = new Dictionary<string, IEnumerable<ImageInformationDTO>>();
 
         try
         {
-            var dllPath = GetMicrosoftDynamicsNavCodeAnalysisDllPath();
-            Console.Error.WriteLine("Found dll path: " + dllPath);
-            if (string.IsNullOrWhiteSpace(dllPath))
+            var resolvedDllPath = dllPath ?? GetMicrosoftDynamicsNavCodeAnalysisDllPath();
+            Console.Error.WriteLine("Found dll path: " + resolvedDllPath);
+            if (string.IsNullOrWhiteSpace(resolvedDllPath))
             {
                 Console.Error.WriteLine("DLL path is null or empty.");
                 return imageGroupsDict;
             }
 
+            // Re-assign so the rest of the method uses the resolved value.
+            dllPath = resolvedDllPath;
             LoadCheckCTor(dllPath);
 
             var assembly = Assembly.LoadFrom(dllPath);

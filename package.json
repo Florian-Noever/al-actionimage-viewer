@@ -54,12 +54,15 @@
     "build:webview": "vite build",
     "dev:webview": "vite",
     "lint": "eslint src",
-    "package": "npx -y @vscode/vsce package"
+    "package": "npx -y @vscode/vsce package",
+    "test": "node ./out/test/runTests.js"
   },
   "devDependencies": {
     "@tanstack/vue-virtual": "^3.13.19",
     "@types/mocha": "^10.0.10",
     "@types/node": "25.x",
+    "@vscode/test-electron": "^2.4.1",
+    "mocha": "^11.1.0",
     "@types/vscode": "^1.105.0",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",

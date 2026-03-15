@@ -110,11 +110,17 @@ public static class BridgeWriteProvider
     /// Optional image provider. When <see langword="null"/> the production
     /// <see cref="NAVImageProvider"/> is used.
     /// </param>
-    public static async Task Write(IImageProvider? provider = null)
+    /// <param name="dllPath">
+    /// Optional explicit path to <c>Microsoft.Dynamics.Nav.CodeAnalysis.dll</c>.
+    /// Ignored when <paramref name="provider"/> is supplied. When both are
+    /// <see langword="null"/> the DLL path is resolved automatically from
+    /// <c>~/.vscode/extensions/</c>.
+    /// </param>
+    public static async Task Write(IImageProvider? provider = null, string? dllPath = null)
     {
         try
         {
-            var imageProvider = provider ?? new NAVImageProvider();
+            var imageProvider = provider ?? new NAVImageProvider(dllPath);
 
 #if DEBUG
             Console.SetOut(TextWriter.Null);
