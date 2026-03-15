@@ -2,7 +2,7 @@
   "name": "al-actionimage-viewer",
   "displayName": "AL ActionImage Viewer",
   "description": "View, Search and Copy AL Action Images",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "Florian-Noever",
   "license": "MIT",
   "icon": "assets/icon.png",
