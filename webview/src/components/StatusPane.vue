@@ -46,10 +46,15 @@ defineEmits<{ retry: [] }>();
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--vscode-foreground) 30%, transparent);
     border-top-color: var(--vscode-progressBar-background, var(--vscode-focusBorder));
-    animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: no-preference) {
+    .spinner {
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+}
 
 .status-pane.error {
     border-style: solid;

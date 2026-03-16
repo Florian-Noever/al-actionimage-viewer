@@ -5,8 +5,9 @@
             ref="menuRef"
             class="ctxmenu"
             role="menu"
+            aria-label="Image actions"
             :style="menuStyle"
-            @keydown.escape="$emit('close')"
+            @keydown="onMenuKeydown"
         >
             <button class="ctxitem" role="menuitem" data-action="copy-name" @click="doAction('copy-name')">Copy Name</button>
             <button class="ctxitem" role="menuitem" data-action="copy-image" @click="doAction('copy-image')">Copy Image</button>
@@ -34,6 +35,7 @@ const emit = defineEmits<{
 const menuRef = ref<HTMLElement | null>(null);
 const menuX = ref(0);
 const menuY = ref(0);
+const returnFocus = ref<HTMLElement | null>(null);
 
 const menuStyle = computed(() => ({
     left: menuX.value + 'px',
@@ -42,24 +44,45 @@ const menuStyle = computed(() => ({
 
 // Position menu at click location with automatic boundary adjustment
 watch(() => props.visible, async (v) => {
-    if (!v) {
-        return;
-    }
-    menuX.value = props.x;
-    menuY.value = props.y;
-    await nextTick();
-    if (!menuRef.value) {
-        return;
-    }
-    // Ensure menu stays within viewport bounds
-    const rect = menuRef.value.getBoundingClientRect();
-    if (menuX.value + rect.width > window.innerWidth) {
-        menuX.value = window.innerWidth - rect.width - 4;
-    }
-    if (menuY.value + rect.height > window.innerHeight) {
-        menuY.value = window.innerHeight - rect.height - 4;
+    if (v) {
+        returnFocus.value = document.activeElement as HTMLElement | null;
+        menuX.value = props.x;
+        menuY.value = props.y;
+        await nextTick();
+        if (!menuRef.value) {
+            return;
+        }
+        // Ensure menu stays within viewport bounds
+        const rect = menuRef.value.getBoundingClientRect();
+        if (menuX.value + rect.width > window.innerWidth) {
+            menuX.value = window.innerWidth - rect.width - 4;
+        }
+        if (menuY.value + rect.height > window.innerHeight) {
+            menuY.value = window.innerHeight - rect.height - 4;
+        }
+        (menuRef.value.querySelector('[role="menuitem"]') as HTMLElement | null)?.focus();
+    } else {
+        returnFocus.value?.focus();
+        returnFocus.value = null;
     }
 });
+
+function onMenuKeydown(e: KeyboardEvent): void {
+    const items = Array.from(menuRef.value?.querySelectorAll('[role="menuitem"]') ?? []) as HTMLElement[];
+    const current = items.indexOf(document.activeElement as HTMLElement);
+    if (e.key === 'Escape') {
+        emit('close');
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        items[(current + 1) % items.length]?.focus();
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        items[(current - 1 + items.length) % items.length]?.focus();
+    } else if (e.key === 'Tab') {
+        e.preventDefault();
+        emit('close');
+    }
+}
 
 function doAction(action: string): void {
     if (props.item) {
@@ -70,6 +93,7 @@ function doAction(action: string): void {
 
 function onMousedown(e: MouseEvent): void {
     if (props.visible && menuRef.value && !menuRef.value.contains(e.target as Node)) {
+        returnFocus.value = null; // User clicked elsewhere intentionally; don't steal focus back
         emit('close');
     }
 }

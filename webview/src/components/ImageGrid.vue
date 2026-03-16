@@ -2,8 +2,13 @@
     <div
         ref="scrollerRef"
         class="scroller"
+        role="grid"
+        aria-label="Images"
+        :aria-rowcount="totalRows"
+        :aria-colcount="columns"
         @wheel.ctrl.prevent="onCtrlWheel"
         @contextmenu.prevent
+        @keydown="onGridKeydown"
     >
         <div v-if="items.length === 0" class="empty">No images.</div>
         <template v-else>
@@ -12,6 +17,8 @@
                     v-for="vRow in rowVirtualizer.getVirtualItems()"
                     :key="vRow.index"
                     class="vrow"
+                    role="row"
+                    :aria-rowindex="vRow.index + 1"
                     :style="{
                         position: 'absolute',
                         top: 0,
@@ -30,15 +37,21 @@
                         paddingBottom: '2px',
                     }"
                 >
-                    <ImageTile
-                        v-for="item in rowItems(vRow.index)"
-                        :key="item.name ?? vRow.index"
-                        :item="item"
-                        :img-size="imgSize"
-                        :selected="item.name !== null && item.name === selectedName"
-                        @contextmenu="$emit('contextmenu', $event)"
-                        @select="$emit('select', $event)"
-                    />
+                    <div
+                        v-for="(item, colIdx) in rowItems(vRow.index)"
+                        :key="item.name ?? `${vRow.index}-${colIdx}`"
+                        role="gridcell"
+                    >
+                        <ImageTile
+                            :item="item"
+                            :img-size="imgSize"
+                            :selected="item.name !== null && item.name === selectedName"
+                            :is-focused="isTileFocused(vRow.index, colIdx)"
+                            @contextmenu="$emit('contextmenu', $event)"
+                            @select="onTileSelect"
+                            @focused="onTileFocused"
+                        />
+                    </div>
                 </div>
             </div>
         </template>
@@ -72,6 +85,7 @@ const pad = 12;
 
 const scrollerRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(800);
+const focusedIndex = ref<number | null>(null);
 
 const columns = computed(() => {
     const colSpace = props.tileW + props.gap;
@@ -93,6 +107,67 @@ function rowItems(rowIndex: number): ImageInformationDTO[] {
     const start = rowIndex * columns.value;
     return props.items.slice(start, start + columns.value);
 }
+
+function isTileFocused(rowIdx: number, colIdx: number): boolean {
+    return focusedIndex.value !== null && focusedIndex.value === rowIdx * columns.value + colIdx;
+}
+
+function onTileSelect(item: ImageInformationDTO): void {
+    const idx = props.items.indexOf(item);
+    if (idx >= 0) {
+        focusedIndex.value = idx;
+    }
+    emit('select', item);
+}
+
+function onTileFocused(item: ImageInformationDTO): void {
+    const idx = props.items.indexOf(item);
+    if (idx >= 0) {
+        focusedIndex.value = idx;
+    }
+}
+
+function onGridKeydown(e: KeyboardEvent): void {
+    const { key } = e;
+    if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(key)) {
+        return;
+    }
+    e.preventDefault();
+    const current = focusedIndex.value ?? 0;
+    let next = current;
+    switch (key) {
+        case 'ArrowRight':
+            next = Math.min(current + 1, props.items.length - 1);
+            break;
+        case 'ArrowLeft':
+            next = Math.max(current - 1, 0);
+            break;
+        case 'ArrowDown':
+            next = Math.min(current + columns.value, props.items.length - 1);
+            break;
+        case 'ArrowUp':
+            next = Math.max(current - columns.value, 0);
+            break;
+        case 'Home':
+            next = 0;
+            break;
+        case 'End':
+            next = props.items.length - 1;
+            break;
+    }
+    focusedIndex.value = next;
+}
+
+watch(focusedIndex, async (newIdx) => {
+    if (newIdx === null) {
+        return;
+    }
+    const row = Math.floor(newIdx / columns.value);
+    rowVirtualizer.value.scrollToIndex(row, { align: 'auto' });
+    await nextTick();
+    const el = scrollerRef.value?.querySelector('[data-focused]') as HTMLElement | null;
+    el?.focus();
+});
 
 // Anchor-lock: keep top item stable during zoom bursts
 let anchorIndex: number | null = null;
@@ -139,9 +214,10 @@ watch([() => props.tileW, () => props.tileH], () => {
     });
 });
 
-// When items change (search/category), reset scroll
+// When items change (search/category), reset scroll and focused index
 watch(() => props.items, () => {
     anchorIndex = null;
+    focusedIndex.value = null;
     scrollerRef.value?.scrollTo({ top: 0 });
 }, { flush: 'post' });
 
