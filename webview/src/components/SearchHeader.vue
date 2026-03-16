@@ -22,37 +22,39 @@
 
         <div class="count" aria-live="polite" aria-atomic="true">{{ count }}&nbsp;items</div>
 
-        <div class="zoom">
-            <button title="Zoom Out (-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
-                <span class="icon" v-html="inlineSvg(zoomOutIcon)" aria-hidden="true"></span>
+        <div class="right-group">
+            <div class="zoom">
+                <button title="Zoom Out (-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
+                    <span class="icon" v-html="inlineSvg(zoomOutIcon)" aria-hidden="true"></span>
+                </button>
+                <input
+                    type="range"
+                    :min="zoomMin * 100"
+                    :max="zoomMax * 100"
+                    :step="zoomStep * 100"
+                    :value="Math.round(zoom * 100)"
+                    aria-label="Zoom Level"
+                    @input="onSlider"
+                />
+                <button title="Zoom In (+)" aria-label="Zoom In" @click="$emit('zoomIn')">
+                    <span class="icon" v-html="inlineSvg(zoomInIcon)" aria-hidden="true"></span>
+                </button>
+                <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
+            </div>
+
+            <button
+                class="sort"
+                :title="sortAscending ? 'Sort: A→Z (click for Z→A)' : 'Sort: Z→A (click for A→Z)'"
+                :aria-label="sortAscending ? 'Sort ascending' : 'Sort descending'"
+                @click="$emit('sort')"
+            >
+                <span class="icon" v-html="inlineSvg(sortAscending ? sortAscIcon : sortDescIcon)" aria-hidden="true"></span>
             </button>
-            <input
-                type="range"
-                :min="zoomMin * 100"
-                :max="zoomMax * 100"
-                :step="zoomStep * 100"
-                :value="Math.round(zoom * 100)"
-                aria-label="Zoom Level"
-                @input="onSlider"
-            />
-            <button title="Zoom In (+)" aria-label="Zoom In" @click="$emit('zoomIn')">
-                <span class="icon" v-html="inlineSvg(zoomInIcon)" aria-hidden="true"></span>
+
+            <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">
+                <span class="icon" v-html="inlineSvg(reloadIcon)" aria-hidden="true"></span>
             </button>
-            <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
         </div>
-
-        <button
-            class="sort"
-            :title="sortAscending ? 'Sort: A→Z (click for Z→A)' : 'Sort: Z→A (click for A→Z)'"
-            :aria-label="sortAscending ? 'Sort ascending' : 'Sort descending'"
-            @click="$emit('sort')"
-        >
-            <span class="icon" v-html="inlineSvg(sortAscending ? sortAscIcon : sortDescIcon)" aria-hidden="true"></span>
-        </button>
-
-        <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">
-            <span class="icon" v-html="inlineSvg(reloadIcon)" aria-hidden="true"></span>
-        </button>
     </div>
 </template>
 
@@ -230,19 +232,24 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     background: var(--vscode-list-hoverBackground);
 }
 
-.zoom {
+.right-group {
     margin-left: auto;
     display: inline-flex;
     align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.zoom {
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
-    flex: 0 1 auto;
-    min-width: 0;
-    flex-shrink: 1;
 }
 
 .zoom button {
-    width: 24px;
-    height: 24px;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
     padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
@@ -266,6 +273,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .zoomPct {
+    flex-shrink: 0;
     width: 4ch;
     opacity: .7;
     font-size: 12px;
@@ -273,12 +281,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
 .sort,
 .reload {
-    position: relative;
-    z-index: 2;
     flex-shrink: 0;
-    margin-left: 8px;
     width: 28px;
-    height: 24px;
+    height: 28px;
     padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
@@ -293,5 +298,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 .sort:hover,
 .reload:hover {
     background: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
+}
+
+@container content-area (max-width: 564px) {
+    .zoom { display: none; }
+}
+
+@container content-area (max-width: 400px) {
+    .count { display: none; }
 }
 </style>

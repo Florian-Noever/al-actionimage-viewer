@@ -21,7 +21,7 @@ function applyZoom(newZoom: number): void {
     document.documentElement.style.setProperty('--tile-h', Math.round(BASE_TILE_H * newZoom) + 'px');
     document.documentElement.style.setProperty('--img', Math.round(BASE_IMG * newZoom) + 'px');
     try {
-        setState({ zoom: newZoom });
+        setState({ ...(getState<Record<string, unknown>>() ?? {}), zoom: newZoom });
     } catch { /* swallow */ }
 }
 
@@ -63,7 +63,7 @@ export function useZoom() {
     onMounted(() => {
         // Restore persisted zoom
         try {
-            const state = getState<{ zoom?: number }>();
+            const state = getState<{ zoom?: number; }>();
             applyZoom(state?.zoom ?? 1.0);
         } catch {
             applyZoom(1.0);
