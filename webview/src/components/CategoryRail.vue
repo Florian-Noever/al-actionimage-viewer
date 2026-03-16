@@ -70,7 +70,8 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
 }
 
 .rail.collapsed {
-    padding: 6px 4px;
+    padding-left: 4px;
+    padding-right: 4px;
     align-items: center;
     overflow: hidden;
 }
