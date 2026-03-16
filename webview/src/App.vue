@@ -1,9 +1,11 @@
 <template>
-    <div class="root">
+    <div class="root" :class="{ 'rail-collapsed': railCollapsed }">
         <CategoryRail
             :categories="categories"
             :active="activeCategory"
+            :collapsed="railCollapsed"
             @change="setCategory"
+            @toggle="toggleRailCollapse"
             @contextmenu="openCatCtxMenu"
         />
 
@@ -87,12 +89,22 @@ import CategoryContextMenu from './components/CategoryContextMenu.vue';
 import { useZoom, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './composables/useZoom';
 import { useSearch } from './composables/useSearch';
 import { useDebug } from './composables/useDebug';
-import { postMessage } from './vscode';
+import { postMessage, getState, setState } from './vscode';
 import { parseDataUrl, blobFromDataUrl, notify } from './utils';
 import type { ImageInformationDTO, ImageMap } from './types/imageInformationDTO';
 import hexagonSrc from './assets/hexagon.svg';
 
 const GAP = 16;
+
+// ---- Rail collapse ----
+const railCollapsed = ref(false);
+
+function toggleRailCollapse(): void {
+    railCollapsed.value = !railCollapsed.value;
+    try {
+        setState({ ...(getState<Record<string, unknown>>() ?? {}), railCollapsed: railCollapsed.value });
+    } catch { /* swallow */ }
+}
 
 // ---- Debug ----
 const { debugActive, toggle: toggleDebug } = useDebug();
@@ -305,6 +317,14 @@ onMounted(() => {
     window.addEventListener('message', onMessage);
     window.addEventListener('keydown', onKeydown);
 
+    // Restore persisted rail state
+    try {
+        const state = getState<{ railCollapsed?: boolean }>();
+        if (state?.railCollapsed) {
+            railCollapsed.value = true;
+        }
+    } catch { /* swallow */ }
+
     // Signal extension we're ready
     showLoading('Loading images...');
     postMessage({ type: 'ready' });
@@ -339,11 +359,17 @@ declare function acquireVsCodeApi(): unknown;
     height: 100vh;
 }
 
+.root.rail-collapsed {
+    grid-template-columns: 40px 1fr;
+}
+
 .content {
     position: relative;
     overflow: hidden;
     display: grid;
     grid-template-rows: auto 1fr;
+    container-type: inline-size;
+    container-name: content-area;
 }
 
 .grid-wrapper {

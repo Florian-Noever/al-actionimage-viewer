@@ -1,38 +1,58 @@
 <template>
-    <aside class="rail" @contextmenu.prevent>
-        <h3>Categories</h3>
-        <div role="radiogroup" aria-label="Image Categories">
-            <label
-                v-for="(cat, i) in allCategories"
-                :key="cat"
-                class="radio"
-                role="radio"
-                :aria-checked="active === cat ? 'true' : 'false'"
-                @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
-            >
-                <input
-                    type="radio"
-                    name="category"
-                    :id="i === 0 ? 'all' : 'c' + (i - 1)"
-                    :checked="active === cat"
-                    @change="$emit('change', cat)"
-                />
-                <span>{{ cat }}</span>
-            </label>
-        </div>
+    <aside class="rail" :class="{ collapsed }" @contextmenu.prevent>
+        <button
+            class="toggle-btn"
+            :title="collapsed ? 'Expand categories' : 'Collapse categories'"
+            :aria-label="collapsed ? 'Expand categories' : 'Collapse categories'"
+            :aria-expanded="!collapsed"
+            :style="collapsed ? 'transform: rotate(180deg)' : ''"
+            @click="$emit('toggle')"
+        >
+            <span class="icon" v-html="inlineSvg(chevronLeftIcon)" aria-hidden="true"></span>
+        </button>
+
+        <template v-if="!collapsed">
+            <h3>Categories</h3>
+            <div role="radiogroup" aria-label="Image Categories">
+                <label
+                    v-for="(cat, i) in allCategories"
+                    :key="cat"
+                    class="radio"
+                    role="radio"
+                    :aria-checked="active === cat ? 'true' : 'false'"
+                    @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
+                >
+                    <input
+                        type="radio"
+                        name="category"
+                        :id="i === 0 ? 'all' : 'c' + (i - 1)"
+                        :checked="active === cat"
+                        @change="$emit('change', cat)"
+                    />
+                    <span>{{ cat }}</span>
+                </label>
+            </div>
+        </template>
     </aside>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import chevronLeftIcon from '../assets/chevron_left.svg?raw';
+
+function inlineSvg(raw: string): string {
+    return raw.replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"');
+}
 
 const props = defineProps<{
     categories: string[];
     active: string;
+    collapsed: boolean;
 }>();
 
 defineEmits<{
     change: [category: string];
+    toggle: [];
     contextmenu: [payload: { category: string; clientX: number; clientY: number }];
 }>();
 
@@ -45,6 +65,14 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     padding: var(--pad);
     box-sizing: border-box;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.rail.collapsed {
+    padding: 6px 4px;
+    align-items: center;
+    overflow: hidden;
 }
 
 .rail h3 {
@@ -53,6 +81,52 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+}
+
+.toggle-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--vscode-foreground);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    flex-shrink: 0;
+    margin-bottom: 6px;
+    opacity: 0.6;
+    transition: transform 0.40s ease;
+}
+
+.rail.collapsed .toggle-btn {
+    align-self: center;
+    margin-bottom: 0;
+}
+
+.toggle-btn:hover {
+    background: var(--vscode-list-hoverBackground, rgba(127, 127, 127, 0.1));
+    opacity: 1;
+}
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.icon :deep(svg) {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
 .radio {
