@@ -2,7 +2,6 @@
     <div class="header">
         <div class="title-group">
             <div class="title">{{ title }}</div>
-            <div class="count">{{ count }}&nbsp;items</div>
         </div>
 
         <div class="search">
@@ -20,6 +19,8 @@
                 <span class="icon" v-html="inlineSvg(closeIcon)" aria-hidden="true"></span>
             </button>
         </div>
+
+        <div class="count" aria-live="polite" aria-atomic="true">{{ count }}&nbsp;items</div>
 
         <div class="zoom">
             <button title="Zoom Out (-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
@@ -138,11 +139,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     overflow: hidden;
 }
 
-/* Title + count - collapse first when space is tight */
+/* Title - collapses first when space is tight */
 .title-group {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
     flex: 0 9 auto;
     min-width: 0;
     overflow: hidden;
@@ -155,16 +153,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
-    flex-shrink: 0;
 }
 
 .count {
+    flex-shrink: 0;
     opacity: 0.6;
     font-size: 12px;
     white-space: nowrap;
-    flex-shrink: 9;
-    min-width: 0;
-    overflow: hidden;
 }
 
 /* Search - grows to fill space, shrinks to minimum, capped at max */
