@@ -277,11 +277,27 @@ function onMessage(evt: MessageEvent): void {
     }
 }
 
-// ---- F5 reload ----
+// ---- F5 reload + 1-9 category shortcut ----
 function onKeydown(e: KeyboardEvent): void {
     if (e.key === 'F5') {
         e.preventDefault();
         requestReload();
+    }
+
+    // 1-9: select category by position (no modifier, not typing in an input)
+    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+            const digit = parseInt(e.key, 10);
+            if (digit >= 1 && digit <= 9) {
+                const allCategories = ['All Images', ...categories.value];
+                const cat = allCategories[digit - 1];
+                if (cat !== undefined) {
+                    e.preventDefault();
+                    setCategory(cat);
+                }
+            }
+        }
     }
 }
 
