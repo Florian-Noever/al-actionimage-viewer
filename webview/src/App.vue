@@ -70,11 +70,14 @@
             <img :src="hexagonSrc" class="debug-hex" alt="" />
             DEBUG
         </div>
+
+        <!-- Visually hidden live region for screen reader announcements -->
+        <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">{{ announcement }}</div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
 import CategoryRail from './components/CategoryRail.vue';
 import SearchHeader from './components/SearchHeader.vue';
 import ImageGrid from './components/ImageGrid.vue';
@@ -99,11 +102,23 @@ const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
 
 // ---- Selection ----
 const selectedName = ref<string | null>(null);
+const announcement = ref('');
 
 function onSelectItem(item: ImageInformationDTO): void {
     const name = item.name ?? null;
     selectedName.value = selectedName.value === name ? null : name;
 }
+
+watch(selectedName, (name) => {
+    if (name) {
+        const item = currentItems.value.find(i => i.name === name);
+        announcement.value = item
+            ? `Selected: ${name}, category ${item.category}`
+            : `Selected: ${name}`;
+    } else {
+        announcement.value = '';
+    }
+});
 
 // ---- Data state ----
 const data = ref<ImageMap>({});
