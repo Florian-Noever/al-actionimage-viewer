@@ -357,10 +357,11 @@ declare function acquireVsCodeApi(): unknown;
     display: grid;
     grid-template-columns: var(--rail-w) 1fr;
     height: 100vh;
+    transition: grid-template-columns 0.25s ease;
 }
 
 .root.rail-collapsed {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 52px 1fr;
 }
 
 .content {
