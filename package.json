@@ -52,7 +52,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build",
-    "dev:webview": "vite",
+    "dev:webview": "vite --open",
     "lint": "eslint src",
     "package": "npx -y @vscode/vsce package",
     "test": "npm run compile && node ./out/test/runTests.js"

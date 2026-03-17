@@ -11,28 +11,30 @@
             <span class="icon" v-html="inlineSvg(chevronLeftIcon)" aria-hidden="true"></span>
         </button>
 
-        <template v-if="!collapsed">
-            <h3>Categories</h3>
-            <div role="radiogroup" aria-label="Image Categories">
-                <label
-                    v-for="(cat, i) in allCategories"
-                    :key="cat"
-                    class="radio"
-                    role="radio"
-                    :aria-checked="active === cat ? 'true' : 'false'"
-                    @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
-                >
-                    <input
-                        type="radio"
-                        name="category"
-                        :id="i === 0 ? 'all' : 'c' + (i - 1)"
-                        :checked="active === cat"
-                        @change="$emit('change', cat)"
-                    />
-                    <span>{{ cat }}</span>
-                </label>
+        <Transition name="rail-content">
+            <div v-show="!collapsed" class="rail-body">
+                <h3>Categories</h3>
+                <div role="radiogroup" aria-label="Image Categories">
+                    <label
+                        v-for="(cat, i) in allCategories"
+                        :key="cat"
+                        class="radio"
+                        role="radio"
+                        :aria-checked="active === cat ? 'true' : 'false'"
+                        @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
+                    >
+                        <input
+                            type="radio"
+                            name="category"
+                            :id="i === 0 ? 'all' : 'c' + (i - 1)"
+                            :checked="active === cat"
+                            @change="$emit('change', cat)"
+                        />
+                        <span>{{ cat }}</span>
+                    </label>
+                </div>
             </div>
-        </template>
+        </Transition>
     </aside>
 </template>
 
@@ -64,16 +66,27 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     border-right: 1px solid var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.35));
     padding: var(--pad);
     box-sizing: border-box;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
-.rail.collapsed {
-    padding-left: 4px;
-    padding-right: 4px;
-    align-items: center;
+
+
+.rail-body {
     overflow: hidden;
+    min-width: calc(var(--rail-w) - 2 * var(--pad));
+}
+
+.rail-content-enter-active,
+.rail-content-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.rail-content-enter-from,
+.rail-content-leave-to {
+    opacity: 0;
 }
 
 .rail h3 {
@@ -103,11 +116,6 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     margin-bottom: 6px;
     opacity: 0.6;
     transition: transform 0.40s ease;
-}
-
-.rail.collapsed .toggle-btn {
-    align-self: center;
-    margin-bottom: 0;
 }
 
 .toggle-btn:hover {
