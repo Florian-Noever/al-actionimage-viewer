@@ -1,15 +1,10 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { getState, setState } from '../vscode';
+import { BASE_TILE_W, BASE_TILE_H, BASE_IMG, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, ZOOM_DEFAULT } from '../constants';
 
-const BASE_TILE_W = 110;
-const BASE_TILE_H = 120;
-const BASE_IMG = 48;
+export { ZOOM_MIN, ZOOM_MAX, ZOOM_STEP };
 
-export const ZOOM_MIN = 0.40;
-export const ZOOM_MAX = 2.0;
-export const ZOOM_STEP = 0.05;
-
-const zoom = ref(1.0);
+const zoom = ref(ZOOM_DEFAULT);
 
 function applyZoom(newZoom: number): void {
     newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +newZoom));
@@ -27,7 +22,7 @@ function applyZoom(newZoom: number): void {
 
 function zoomIn(): void { applyZoom(zoom.value + ZOOM_STEP); }
 function zoomOut(): void { applyZoom(zoom.value - ZOOM_STEP); }
-function resetZoom(): void { applyZoom(1.0); }
+function resetZoom(): void { applyZoom(ZOOM_DEFAULT); }
 
 const tileW = computed(() => Math.round(BASE_TILE_W * zoom.value));
 const tileH = computed(() => Math.round(BASE_TILE_H * zoom.value));
@@ -42,17 +37,21 @@ function setupKeyboardHandlers(): () => void {
         if (tag === 'INPUT' || tag === 'TEXTAREA') {
             return;
         }
-        if (e.key === '=' || e.key === '+') {
-            e.preventDefault();
-            zoomIn();
-        }
-        if (e.key === '-') {
-            e.preventDefault();
-            zoomOut();
-        }
-        if (e.key === '0') {
-            e.preventDefault();
-            resetZoom();
+
+        switch (e.key) {
+            case '=':
+            case '+':
+                e.preventDefault();
+                zoomIn();
+                break;
+            case '-':
+                e.preventDefault();
+                zoomOut();
+                break;
+            case '0':
+                e.preventDefault();
+                resetZoom();
+                break;
         }
     }
     window.addEventListener('keydown', onKeydown);
@@ -64,9 +63,9 @@ export function useZoom() {
         // Restore persisted zoom
         try {
             const state = getState<{ zoom?: number; }>();
-            applyZoom(state?.zoom ?? 1.0);
+            applyZoom(state?.zoom ?? ZOOM_DEFAULT);
         } catch {
-            applyZoom(1.0);
+            applyZoom(ZOOM_DEFAULT);
         }
         const cleanup = setupKeyboardHandlers();
         onUnmounted(cleanup);

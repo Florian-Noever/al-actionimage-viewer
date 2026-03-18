@@ -127,7 +127,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 .header {
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: var(--z-header);
     background: linear-gradient(
         to bottom,
         var(--vscode-editor-background),
@@ -160,7 +160,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 .count {
     flex-shrink: 0;
     opacity: 0.6;
-    font-size: 12px;
+    font-size: var(--font);
     white-space: nowrap;
 }
 
@@ -175,7 +175,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     background: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
     border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 2px 6px 2px 8px;
     box-sizing: border-box;
     overflow: hidden;
@@ -202,16 +202,16 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: var(--icon-size);
+    height: var(--icon-size);
     flex-shrink: 0;
     pointer-events: none;
     color: inherit;
 }
 
 .icon :deep(svg) {
-    width: 16px;
-    height: 16px;
+    width: var(--icon-size);
+    height: var(--icon-size);
     fill: currentColor;
 }
 
@@ -223,7 +223,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     cursor: pointer;
     line-height: 1;
     padding: 2px 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     display: inline-flex;
     align-items: center;
 }
@@ -248,13 +248,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
 .zoom button {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: var(--btn-size);
+    height: var(--btn-size);
     padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
     color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -276,19 +276,19 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
     flex-shrink: 0;
     width: 4ch;
     opacity: .7;
-    font-size: 12px;
+    font-size: var(--font);
 }
 
 .sort,
 .reload {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: var(--btn-size);
+    height: var(--btn-size);
     padding: 0;
     border: 1px solid var(--vscode-button-border, var(--vscode-input-border));
     background: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
     color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: inline-flex;
     align-items: center;

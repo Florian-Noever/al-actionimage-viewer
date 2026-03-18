@@ -36,20 +36,39 @@
     --vscode-editor-hoverHighlightBackground: rgba(255, 255, 255, 0.06);
 
     --rail-w: 240px;
+    /* set by useDesignTokens */
 
-    /* base sizes */
-    --base-tile-w: 110;
-    --base-tile-h: 120;
-    --base-img: 48;
-
-    /* live sizes - updated by useZoom */
-    --tile-w: calc(var(--base-tile-w) * 1px);
-    --tile-h: calc(var(--base-tile-h) * 1px);
-    --img: calc(var(--base-img) * 1px);
+    /* base tile sizes and live tile sizes - set by useZoom */
+    --tile-w: 110px;
+    --tile-h: 120px;
+    --img: 48px;
 
     --gap: 16px;
+    /* set by useDesignTokens */
     --pad: 12px;
+    /* set by useDesignTokens */
     --font: 12px;
+    /* set by useDesignTokens */
+
+    /* Button & icon dimensions */
+    --btn-size: 28px;
+    --icon-size: 16px;
+
+    /* Border radii */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-card: 10px;
+
+    /* Z-index layers */
+    --z-header: 5;
+    --z-overlay: 10;
+    --z-menu: 9999;
+    --z-debug: 99999;
+
+    /* Transition durations */
+    --duration-fast: 0.2s;
+    --duration-base: 0.25s;
+    --duration-slow: 0.4s;
 }
 
 html,

@@ -28,13 +28,13 @@ defineEmits<{ retry: [] }>();
     position: absolute;
     inset: 60px var(--pad) var(--pad) var(--pad);
     display: flex;
-    gap: 12px;
+    gap: var(--pad);
     align-items: center;
     justify-content: center;
     border: 1px dashed var(--vscode-panel-border, var(--vscode-editorWidget-border));
     border-radius: 8px;
     background: color-mix(in srgb, var(--vscode-editor-background) 80%, transparent);
-    z-index: 10;
+    z-index: var(--z-overlay);
     padding: 16px;
 }
 

@@ -80,7 +80,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
-import { useResizeObserver } from '@vueuse/core';
 import CategoryRail from './components/CategoryRail.vue';
 import SearchHeader from './components/SearchHeader.vue';
 import ImageGrid from './components/ImageGrid.vue';
@@ -90,39 +89,22 @@ import CategoryContextMenu from './components/CategoryContextMenu.vue';
 import { useZoom, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from './composables/useZoom';
 import { useSearch } from './composables/useSearch';
 import { useDebug } from './composables/useDebug';
-import { postMessage, getState, setState } from './vscode';
+import { useDesignTokens } from './composables/useDesignTokens';
+import { useRailCollapse } from './composables/useRailCollapse';
+import { useImageData } from './composables/useImageData';
+import { postMessage } from './vscode';
 import { parseDataUrl, blobFromDataUrl, notify } from './utils';
-import type { ImageInformationDTO, ImageMap } from './types/imageInformationDTO';
+import type { ImageInformationDTO } from './types/imageInformationDTO';
+import type { ImageMap } from './types/imageInformationDTO';
 import hexagonSrc from './assets/hexagon.svg';
+import { GAP } from './constants';
 
-const GAP = 16;
+// Inject layout design tokens as CSS custom properties on <html>
+useDesignTokens();
 
 // ---- Rail collapse ----
 const rootRef = ref<HTMLElement | null>(null);
-const railCollapsed = ref(false);
-const autoCollapsed = ref(false);
-
-const RAIL_AUTO_COLLAPSE_WIDTH = 490;
-const RAIL_AUTO_EXPAND_WIDTH = 530;
-
-useResizeObserver(rootRef, ([entry]) => {
-    const width = entry.contentRect.width;
-    if (width < RAIL_AUTO_COLLAPSE_WIDTH && !railCollapsed.value) {
-        railCollapsed.value = true;
-        autoCollapsed.value = true;
-    } else if (width >= RAIL_AUTO_EXPAND_WIDTH && autoCollapsed.value) {
-        railCollapsed.value = false;
-        autoCollapsed.value = false;
-    }
-});
-
-function toggleRailCollapse(): void {
-    autoCollapsed.value = false;
-    railCollapsed.value = !railCollapsed.value;
-    try {
-        setState({ ...(getState<Record<string, unknown>>() ?? {}), railCollapsed: railCollapsed.value });
-    } catch { /* swallow */ }
-}
+const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(rootRef);
 
 // ---- Debug ----
 const { debugActive, toggle: toggleDebug } = useDebug();
@@ -150,37 +132,25 @@ watch(selectedName, (name) => {
     }
 });
 
-// ---- Data state ----
-const data = ref<ImageMap>({});
-const categories = ref<string[]>([]);
-const activeCategory = ref('All Images');
+// ---- Data / loading / error state ----
+const {
+    data,
+    categories,
+    activeCategory,
+    loading,
+    loadingMessage,
+    hasError,
+    errorMessage,
+    showLoading,
+    showError,
+    setCategory,
+    onDataMessage,
+} = useImageData();
 
 // ---- Search ----
 const { searchQuery, currentItems, sortAscending, toggleSort } = useSearch(data, categories, activeCategory);
 
 let devTimer: ReturnType<typeof setTimeout> | undefined;
-
-// ---- Loading / error state ----
-const loading = ref(false);
-const loadingMessage = ref('Loading images...');
-const hasError = ref(false);
-const errorMessage = ref('');
-
-function showLoading(message = 'Loading...'): void {
-    hasError.value = false;
-    loadingMessage.value = message;
-    loading.value = true;
-}
-
-function hideLoading(): void {
-    loading.value = false;
-}
-
-function showError(message: string): void {
-    loading.value = false;
-    errorMessage.value = message || 'An unknown error occurred.';
-    hasError.value = true;
-}
 
 // ---- Context menu ----
 const ctx = reactive<{
@@ -275,11 +245,6 @@ async function onCtxAction(action: string, item: ImageInformationDTO): Promise<v
     }
 }
 
-// ---- Category ----
-function setCategory(cat: string): void {
-    activeCategory.value = cat;
-}
-
 // ---- Reload ----
 function requestReload(): void {
     showLoading('Reloading...');
@@ -292,19 +257,7 @@ function onMessage(evt: MessageEvent): void {
         return;
     }
     const { type, payload } = evt.data as { type: string; payload: unknown };
-    if (type === 'loading') {
-        showLoading((payload as { message?: string })?.message || 'Loading...');
-    }
-    if (type === 'error') {
-        showError((payload as { message?: string })?.message || 'Failed to load.');
-    }
-    if (type === 'setData') {
-        hideLoading();
-        hasError.value = false;
-        data.value = (payload as ImageMap) || {};
-        categories.value = Object.keys(data.value);
-        activeCategory.value = 'All Images';
-    }
+    onDataMessage(type, payload);
 }
 
 // ---- F5 reload + 1-9 category shortcut ----
@@ -336,12 +289,7 @@ onMounted(() => {
     window.addEventListener('keydown', onKeydown);
 
     // Restore persisted rail state
-    try {
-        const state = getState<{ railCollapsed?: boolean }>();
-        if (state?.railCollapsed) {
-            railCollapsed.value = true;
-        }
-    } catch { /* swallow */ }
+    restoreRailState();
 
     // Signal extension we're ready
     showLoading('Loading images...');
@@ -375,11 +323,11 @@ declare function acquireVsCodeApi(): unknown;
     display: grid;
     grid-template-columns: var(--rail-w) 1fr;
     height: 100vh;
-    transition: grid-template-columns 0.25s ease;
+    transition: grid-template-columns var(--duration-base) ease;
 }
 
 .root.rail-collapsed {
-    grid-template-columns: 52px 1fr;
+    grid-template-columns: var(--rail-collapsed-w) 1fr;
 }
 
 .content {
@@ -400,12 +348,12 @@ declare function acquireVsCodeApi(): unknown;
     position: fixed;
     bottom: 10px;
     right: 12px;
-    z-index: 99999;
+    z-index: var(--z-debug);
     display: flex;
     align-items: center;
     gap: 4px;
     padding: 3px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.05em;
