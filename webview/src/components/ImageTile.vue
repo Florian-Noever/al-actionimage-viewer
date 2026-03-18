@@ -104,7 +104,7 @@ function onContextMenu(e: MouseEvent): void {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-card);
     padding: 8px 4px;
     box-sizing: border-box;
     user-select: none;

@@ -81,7 +81,7 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
 
 .rail-content-enter-active,
 .rail-content-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity var(--duration-fast) ease;
 }
 
 .rail-content-enter-from,
@@ -91,15 +91,15 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
 
 .rail h3 {
     margin: 0 0 8px 0;
-    font-size: 12px;
+    font-size: var(--font);
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
 .toggle-btn {
-    width: 28px;
-    height: 28px;
+    width: var(--btn-size);
+    height: var(--btn-size);
     padding: 0;
     appearance: none;
     border: none;
@@ -107,7 +107,7 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     color: var(--vscode-foreground);
     cursor: pointer;
     padding: 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -115,7 +115,7 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     flex-shrink: 0;
     margin-bottom: 6px;
     opacity: 0.6;
-    transition: transform 0.40s ease;
+    transition: transform var(--duration-slow) ease;
 }
 
 .toggle-btn:hover {
@@ -127,14 +127,14 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: var(--icon-size);
+    height: var(--icon-size);
     pointer-events: none;
 }
 
 .icon :deep(svg) {
-    width: 16px;
-    height: 16px;
+    width: var(--icon-size);
+    height: var(--icon-size);
     fill: currentColor;
 }
 
@@ -143,7 +143,7 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     align-items: center;
     gap: 8px;
     padding: 6px 4px;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
 }
 

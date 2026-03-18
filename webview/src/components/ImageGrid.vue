@@ -30,8 +30,8 @@
                         gridAutoFlow: 'column',
                         gridAutoColumns: tileW + 'px',
                         columnGap: gap + 'px',
-                        paddingLeft: pad + 'px',
-                        paddingRight: pad + 'px',
+                        paddingLeft: GRID_PAD + 'px',
+                        paddingRight: GRID_PAD + 'px',
                         boxSizing: 'border-box',
                         paddingTop: '2px',
                         paddingBottom: '2px',
@@ -63,6 +63,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { useVirtualizer } from '@tanstack/vue-virtual';
 import ImageTile from './ImageTile.vue';
 import type { ImageInformationDTO } from '../types/imageInformationDTO';
+import { GRID_PAD, GRID_OVERSCAN } from '../constants';
 
 const props = defineProps<{
     items: ImageInformationDTO[];
@@ -79,17 +80,13 @@ const emit = defineEmits<{
     select: [item: ImageInformationDTO];
 }>();
 
-const PAD = 24;
-const OVERSCAN = 4;
-const pad = 12;
-
 const scrollerRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(800);
 const focusedIndex = ref<number | null>(null);
 
 const columns = computed(() => {
     const colSpace = props.tileW + props.gap;
-    return Math.max(1, Math.floor((containerWidth.value - PAD) / colSpace));
+    return Math.max(1, Math.floor((containerWidth.value - GRID_PAD * 2) / colSpace));
 });
 
 const totalRows = computed(() => Math.ceil(props.items.length / columns.value));
@@ -99,7 +96,7 @@ const rowVirtualizer = useVirtualizer(
         count: totalRows.value,
         getScrollElement: () => scrollerRef.value,
         estimateSize: () => props.tileH,
-        overscan: OVERSCAN,
+        overscan: GRID_OVERSCAN,
     }))
 );
 
