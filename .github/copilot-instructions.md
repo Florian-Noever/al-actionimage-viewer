@@ -128,15 +128,20 @@ A Vue 3 Single-File-Component application, built by Vite as a single **IIFE bund
 ### Key Files & Components
 | Path | Role |
 |------|------|
-| `src/App.vue` | Root component - orchestrates state, routing between components, message handling |
-| `src/components/CategoryRail.vue` | Left sidebar listing all categories + "All Images" |
+| `src/App.vue` | Root component - wires composables together, handles keyboard shortcuts, message dispatch, dev fallback |
+| `src/constants.ts` | **Single source of truth** for all shared numbers (layout, rail, tile sizes, zoom, grid) |
+| `src/components/CategoryRail.vue` | Left sidebar listing all categories + "All Images"; auto-collapses at narrow widths |
 | `src/components/SearchHeader.vue` | Search input, zoom controls, sort toggle, reload button |
 | `src/components/ImageGrid.vue` | Virtualised grid of image tiles (`@tanstack/vue-virtual`) |
 | `src/components/ImageTile.vue` | Individual tile - image, name, click to select |
 | `src/components/ContextMenu.vue` | Right-click menu for a single image (copy / export) |
 | `src/components/CategoryContextMenu.vue` | Right-click menu for a category (export all) |
 | `src/components/StatusPane.vue` | Loading spinner and error state overlay |
-| `src/composables/useZoom.ts` | Zoom level state + tile/image size derivation |
+| `src/composables/useDesignTokens.ts` | Injects layout CSS custom properties onto `<html>` from `constants.ts` at startup |
+| `src/composables/useRailCollapse.ts` | Rail collapsed/expanded state: auto-collapse on resize + manual toggle + vscode state persistence |
+| `src/composables/useImageData.ts` | Image data, loading/error state, `onDataMessage` handler |
+| `src/composables/useContextMenu.ts` | Shared context-menu positioning, boundary-clamping, keyboard nav, and focus-trap logic |
+| `src/composables/useZoom.ts` | Zoom level state + tile/image size derivation + CSS var injection + keyboard shortcuts |
 | `src/composables/useSearch.ts` | Filtered + sorted item list computed from active category and search query |
 | `src/composables/useDebug.ts` | Debug border toggle (Ctrl+Shift+D) |
 | `src/vscode.ts` | Typed wrapper around `acquireVsCodeApi()` - safe to call in plain browser too |
@@ -155,25 +160,73 @@ A Vue 3 Single-File-Component application, built by Vite as a single **IIFE bund
 | `vue` | Reactivity, SFC |
 | `@tanstack/vue-virtual` | Virtual scrolling for large image grids |
 | `floating-vue` | Tooltip primitives |
-| `@vueuse/core` | Utility composables |
+| `@vueuse/core` | Utility composables (`useResizeObserver` etc.) |
+
+### Design Token System
+
+All shared numbers have **one source of truth**: `constants.ts`. Two mechanisms inject them into the browser at runtime:
+
+- **`useDesignTokens()`** (called once at the top of `App.vue` `<script setup>`) sets `--gap`, `--pad`, `--font`, `--rail-w`, `--rail-collapsed-w` on `document.documentElement`.
+- **`useZoom.applyZoom()`** sets `--tile-w`, `--tile-h`, `--img` on `document.documentElement` whenever zoom changes.
+
+All CSS in component `<style scoped>` blocks consumes these vars. Additionally, `global.css` defines **pure-CSS design tokens** (no TypeScript equivalent) in `:root`:
+
+| Token | Value | Used for |
+|---|---|---|
+| `--btn-size` | 28px | All icon buttons |
+| `--icon-size` | 16px | All SVG icons |
+| `--radius-sm` | 4px | Buttons, menu items |
+| `--radius-md` | 6px | Search box, menus, radio items |
+| `--radius-card` | 10px | Image tiles |
+| `--z-header` | 5 | Sticky header |
+| `--z-overlay` | 10 | Status pane |
+| `--z-menu` | 9999 | Context menus |
+| `--z-debug` | 99999 | Debug badge |
+| `--duration-fast` | 0.2s | Rail content fade |
+| `--duration-base` | 0.25s | Rail slide transition |
+| `--duration-slow` | 0.4s | Toggle button rotation |
+
+**Rule**: never hardcode a value in component CSS that already has a token.
+
+### Composable Responsibilities
+
+| Composable | Owns |
+|---|---|
+| `useDesignTokens` | One-shot CSS var injection from `constants.ts` |
+| `useRailCollapse(rootRef)` | `railCollapsed`, `toggleRailCollapse`, `restoreRailState`; auto-collapses below `RAIL_AUTO_COLLAPSE_WIDTH` (490 px) and auto-expands above `RAIL_AUTO_EXPAND_WIDTH` (530 px) if not manually toggled |
+| `useImageData` | `data`, `categories`, `activeCategory`, `loading/loadingMessage`, `hasError/errorMessage`, `showLoading`, `showError`, `setCategory`, `onDataMessage` |
+| `useContextMenu(visible, x, y, emitClose)` | `menuRef`, `menuStyle`, `onMenuKeydown`; used by both `ContextMenu.vue` and `CategoryContextMenu.vue` |
+| `useZoom` | `zoom`, `tileW`, `tileH`, `imgSize`, `applyZoom`, `zoomIn`, `zoomOut`; also sets `--tile-*` CSS vars and handles `+`/`-`/`0` keyboard shortcuts |
+| `useSearch(data, categories, activeCategory)` | `searchQuery`, `currentItems`, `sortAscending`, `toggleSort` |
+| `useDebug` | `debugActive`, `toggle` |
+
+### SVG Import Pattern
+- `?raw` suffix → used with `v-html="inlineSvg(...)"` (icons rendered inline so `fill` can be set to `currentColor`)
+- No suffix → used as `<img :src="...">` (hexagon, placeholder image)
+
+### Rail Auto-Collapse
+The category rail auto-collapses to 52 px when the total webview width drops below 490 px (constant `RAIL_AUTO_COLLAPSE_WIDTH`), and auto-expands when it rises back above 530 px (`RAIL_AUTO_EXPAND_WIDTH`). If the user manually toggles the rail, auto-expand is disabled until the next manual toggle. The collapsed state is also persisted via `vscode.setState`.
 
 ### Data Flow (happy path)
 ```
 App.vue mounts
+  → useDesignTokens() sets CSS vars
   → postMessage({ type: 'ready' })
     → extension spawns C# binary
       → binary writes binary payload to stdout
         → BinaryReader parses payload
           → extension postMessage({ type: 'setData', payload: imageGroups })
-            → App.vue stores data, CategoryRail populates
+            → useImageData.onDataMessage() stores data
+              → CategoryRail populates, ImageGrid renders
 ```
 
 ---
 
 ## Cross-Cutting Conventions
 
-- **DTO symmetry**: `ImageInformationDTO` is defined in three places (C# `Data/`, TS `src/types/`, webview `types/`) and must stay in sync - `name`, `category`, `tags`, `imageDataUrl`.
+- **DTO symmetry**: `ImageInformationDTO` is defined in three places (C# `Data/`, TS `src/types/`, webview `types/`) and must stay in sync — `name`, `category`, `tags`, `imageDataUrl`.
 - **Binary protocol symmetry**: `BridgeWriteProvider.cs` (writer) and `binaryReader.ts` (reader) must remain byte-for-byte compatible. When changing the protocol, update both files together.
+- **Constants single source of truth**: any numeric value used by both TypeScript logic and CSS lives in `webview/src/constants.ts`. CSS-only visual tokens live in `global.css`. Never define the same value in two places.
 - **Platform binaries**: The C# binary is published for `win32`, `linux`, `darwin` and stored under `bin/`. Never include runtime DLLs for the AL extension itself - the user must have the AL Language extension installed.
 - **CSP**: The webview HTML uses a nonce. All inline scripts must receive the nonce; no `unsafe-inline`.
 - **No VS Code API in webview**: The webview communicates only through `vscode.ts` (`postMessage` / `getState` / `setState`). Never import `vscode` in webview code.
