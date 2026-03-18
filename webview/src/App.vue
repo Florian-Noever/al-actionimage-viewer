@@ -1,5 +1,5 @@
 <template>
-    <div class="root" :class="{ 'rail-collapsed': railCollapsed }">
+    <div ref="rootRef" class="root" :class="{ 'rail-collapsed': railCollapsed }">
         <CategoryRail
             :categories="categories"
             :active="activeCategory"
@@ -80,6 +80,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import CategoryRail from './components/CategoryRail.vue';
 import SearchHeader from './components/SearchHeader.vue';
 import ImageGrid from './components/ImageGrid.vue';
@@ -97,9 +98,26 @@ import hexagonSrc from './assets/hexagon.svg';
 const GAP = 16;
 
 // ---- Rail collapse ----
+const rootRef = ref<HTMLElement | null>(null);
 const railCollapsed = ref(false);
+const autoCollapsed = ref(false);
+
+const RAIL_AUTO_COLLAPSE_WIDTH = 490;
+const RAIL_AUTO_EXPAND_WIDTH = 530;
+
+useResizeObserver(rootRef, ([entry]) => {
+    const width = entry.contentRect.width;
+    if (width < RAIL_AUTO_COLLAPSE_WIDTH && !railCollapsed.value) {
+        railCollapsed.value = true;
+        autoCollapsed.value = true;
+    } else if (width >= RAIL_AUTO_EXPAND_WIDTH && autoCollapsed.value) {
+        railCollapsed.value = false;
+        autoCollapsed.value = false;
+    }
+});
 
 function toggleRailCollapse(): void {
+    autoCollapsed.value = false;
     railCollapsed.value = !railCollapsed.value;
     try {
         setState({ ...(getState<Record<string, unknown>>() ?? {}), railCollapsed: railCollapsed.value });
