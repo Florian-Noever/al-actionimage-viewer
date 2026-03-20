@@ -45,7 +45,26 @@
         "command": "al-actionimage-viewer.open",
         "title": "AL ActionImage Viewer"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "al-actionimage-viewer",
+          "title": "AL ActionImage Viewer",
+          "icon": "assets/icon2.svg"
+        }
+      ]
+    },
+    "views": {
+      "al-actionimage-viewer": [
+        {
+          "id": "al-actionimage-viewer.sidebar",
+          "name": "Images",
+          "type": "webview",
+          "icon": "assets/icon2.svg"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile && npm run build:webview",
