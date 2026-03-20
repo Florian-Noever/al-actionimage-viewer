@@ -85,7 +85,7 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command a
 | File | Role |
 |------|------|
 | `extension.ts` | Activation, panel + sidebar registration, exports `MANIFEST` and `COMMAND_OPEN` |
-| `utils/webviewUtils.ts` | `getWebviewHtml` (CSP/nonce/sidebarMode HTML injection) and `handleWebviewMessage` (message dispatch) |
+| `utils/webviewUtils.ts` | `getWebviewHtml` (CSP/nonce/sidebarMode HTML injection), `handleWebviewMessage` (message dispatch), and `setupWebviewMessageListener` (shared listener wiring used by both panel and sidebar) |
 | `utils/imageInformationProvider.ts` | Resolves binary path per platform, sets executable bit on Unix, discovers DLL via VS Code API, calls `readFromBridgeStdout` |
 | `utils/binaryReader.ts` | `BinaryReader` class + `parseBridgePayload` — mirrors the C# binary protocol exactly |
 | `utils/imageBrowserSidebarProvider.ts` | `ImageBrowserSidebarProvider` — `WebviewViewProvider` implementation for the activity-bar sidebar |
@@ -94,7 +94,9 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command a
 | `handlers/exportImage.ts` | Handles `export-image` message - shows save dialog, writes file |
 | `handlers/exportCategory.ts` | Handles `export-category` message - shows folder picker, writes all images with progress notification |
 | `handlers/notify.ts` | Handles `notify` message - shows VS Code info/warning/error messages |
-| `types/imageInformationDTO.ts` | TypeScript mirror of the C# DTO; exports `ImageInformationDTO` and `ImageInformation` alias |
+| `types/imageInformationDTO.ts` | TypeScript mirror of the C# DTO; exports `ImageInformationDTO` |
+| `types/webviewMessages.ts` | `WebviewMessage` discriminated union (webview → extension) with `ExportImagePayload`, `ExportCategoryPayload` interfaces and `isWebviewMessage()` type guard |
+| `utils/errors.ts` | `wrapError(operation, e)` — shared error-wrapping utility used by export handlers |
 
 ### Webview Setup
 - The extension reads `public/index.html` and injects `%STYLE_URI%`, `%APP_URI%`, `%CSP_SOURCE%`, `%NONCE%`, and `%SIDEBAR_MODE%` placeholders at runtime via `getWebviewHtml` in `webviewUtils.ts`.
@@ -104,6 +106,10 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command a
 - The sidebar webview does not use `retainContextWhenHidden` (managed by VS Code).
 
 ### Message Protocol (Extension ↔ Webview)
+
+Message types are defined as **discriminated unions** with type guards:
+- Webview → extension: `WebviewMessage` in `src/types/webviewMessages.ts` — use `isWebviewMessage()` to narrow
+- Extension → webview: `ExtensionMessage` in `webview/src/types/extensionMessages.ts` — use `isExtensionMessage()` to narrow
 
 **Extension → Webview:**
 | `type` | Payload | Meaning |
@@ -158,8 +164,9 @@ A Vue 3 Single-File-Component application, built by Vite as a single **IIFE bund
 | `src/composables/useSearch.ts` | Filtered + sorted item list computed from active category and search query; deduplicates in "All Images" |
 | `src/composables/useDebug.ts` | Debug border toggle (Ctrl+Shift+D) |
 | `src/vscode.ts` | Typed wrapper around `acquireVsCodeApi()` — `postMessage`, `getState`, `setState`, `isVscode`, `isSidebarMode()` |
-| `src/utils.ts` | `makeSearchPredicate` (with wildcard and exact-match), `parseDataUrl`, `blobFromDataUrl`, `normalize`, `notify` helpers |
+| `src/utils.ts` | `inlineSvg` (SVG fill → currentColor), `makeSearchPredicate` (wildcard and exact-match), `parseDataUrl`, `blobFromDataUrl`, `normalize`, `notify` helpers |
 | `src/types/imageInformationDTO.ts` | Frontend mirror of the DTO + `ImageMap` type alias |
+| `src/types/extensionMessages.ts` | `ExtensionMessage` discriminated union (extension → webview) with `isExtensionMessage()` type guard |
 
 ### Vite Build Configuration (`vite.config.ts`)
 - Root: `webview/`
@@ -207,14 +214,14 @@ All CSS in component `<style scoped>` blocks consumes these vars. Additionally, 
 |---|---|
 | `useDesignTokens` | One-shot CSS var injection from `constants.ts` |
 | `useRailCollapse(rootRef, zoomRef?, applyZoom?)` | `railCollapsed`, `toggleRailCollapse`, `restoreRailState`; auto-collapses below `RAIL_AUTO_COLLAPSE_WIDTH` (490 px) and auto-expands above `RAIL_AUTO_EXPAND_WIDTH` (530 px) if not manually toggled; when auto-collapsing also reduces zoom to 55% if currently at default, and restores zoom on auto-expand |
-| `useImageData` | `data`, `categories`, `activeCategory`, `loading/loadingMessage`, `hasError/errorMessage`, `showLoading`, `showError`, `setCategory`, `onDataMessage` |
+| `useImageData` | `data`, `categories`, `activeCategory`, `loading/loadingMessage`, `hasError/errorMessage`, `showLoading`, `showError`, `setCategory`, `onDataMessage(msg: ExtensionMessage)` |
 | `useContextMenu(visible, x, y, emitClose)` | `menuRef`, `menuStyle`, `onMenuKeydown`; used by both `ContextMenu.vue` and `CategoryContextMenu.vue` |
 | `useZoom` | `zoom`, `tileW`, `tileH`, `imgSize`, `applyZoom`, `zoomIn`, `zoomOut`, `resetZoom`; sets `--tile-*` CSS vars, handles `+`/`-`/`0` keyboard shortcuts, persists zoom level via `vscode.setState` |
 | `useSearch(data, categories, activeCategory)` | `searchQuery`, `currentItems`, `sortAscending`, `toggleSort`; deduplicates items by name when "All Images" is active |
 | `useDebug` | `debugActive`, `toggle` |
 
 ### SVG Import Pattern
-- `?raw` suffix → used with `v-html="inlineSvg(...)"` (icons rendered inline so `fill` can be set to `currentColor`)
+- `?raw` suffix → used with `v-html="inlineSvg(...)"` (icons rendered inline so `fill` can be set to `currentColor`). `inlineSvg` is the shared helper in `src/utils.ts` — import it from there, never define it locally in a component.
 - No suffix → used as `<img :src="...">` (hexagon, placeholder image)
 
 ### Rail Auto-Collapse
