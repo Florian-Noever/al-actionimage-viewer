@@ -17,14 +17,14 @@ const navCodeAnalysisDll = 'Microsoft.Dynamics.Nav.CodeAnalysis.dll';
 
 function platformFolder(): Platform {
     switch (process.platform) {
-        case 'win32':
-            return Platform.Windows;
-        case 'linux':
-            return Platform.Linux;
-        case 'darwin':
-            return Platform.MacOS;
-        default:
-            throw new Error(`Unsupported platform: ${process.platform}`);
+    case 'win32':
+        return Platform.Windows;
+    case 'linux':
+        return Platform.Linux;
+    case 'darwin':
+        return Platform.MacOS;
+    default:
+        throw new Error(`Unsupported platform: ${process.platform}`);
     }
 }
 
@@ -32,8 +32,8 @@ export function getBridgeBinaryPath(extensionRoot: string): string {
     const folder = platformFolder();
     const file =
         folder === Platform.Windows
-            ? `${exeName}.exe`
-            : exeName; // No extension on Unix-based platforms
+        	? `${exeName}.exe`
+        	: exeName; // No extension on Unix-based platforms
     return path.join(extensionRoot, 'bin', folder, file);
 }
 

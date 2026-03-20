@@ -11,19 +11,19 @@ export async function handleWebviewMessage(context: vscode.ExtensionContext, web
 
     try {
         switch (msg?.type) {
-            case 'ready':
-            case 'retry':
-                await handleLoadImages(context, webview);
-                break;
-            case 'notify':
-                handleNotify(msg);
-                break;
-            case 'export-image':
-                await handleExportImage(msg);
-                break;
-            case 'export-category':
-                await handleExportCategory(msg);
-                break;
+        case 'ready':
+        case 'retry':
+            await handleLoadImages(context, webview);
+            break;
+        case 'notify':
+            handleNotify(msg);
+            break;
+        case 'export-image':
+            await handleExportImage(msg);
+            break;
+        case 'export-category':
+            await handleExportCategory(msg);
+            break;
         }
     } catch (e) {
         Logger.error(`Error handling message of type "${msg?.type}": ${e instanceof Error ? e.message : String(e)}`);

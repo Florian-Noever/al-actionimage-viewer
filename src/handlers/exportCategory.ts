@@ -33,7 +33,9 @@ export async function handleExportCategory(msg: { payload?: ExportCategoryPayloa
             openLabel: 'Export Here',
             title: `Export images for "${category}"`,
         });
-        if (!folderUris || folderUris.length === 0) { return; }
+        if (!folderUris || folderUris.length === 0) {
+            return; 
+        }
         const folderUri = folderUris[0];
 
         const total = images.length;
