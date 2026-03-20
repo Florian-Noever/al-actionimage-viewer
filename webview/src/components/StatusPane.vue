@@ -1,7 +1,7 @@
 <template>
     <div v-if="loading || error" class="status-pane" :class="{ error }" :role="error ? 'alert' : undefined" aria-live="polite">
         <template v-if="loading">
-            <div class="spinner" aria-hidden="true"></div>
+            <div class="spinner" aria-hidden="true" />
             <div class="status-text">{{ loadingMessage }}</div>
         </template>
         <template v-else-if="error">

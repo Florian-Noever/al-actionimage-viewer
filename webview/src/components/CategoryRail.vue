@@ -10,7 +10,7 @@
                 :style="collapsed ? 'transform: rotate(180deg)' : ''"
                 @click="$emit('toggle')"
             >
-                <span class="icon" v-html="inlineSvg(chevronLeftIcon)" aria-hidden="true"></span>
+                <span class="icon" aria-hidden="true" v-html="inlineSvg(chevronLeftIcon)" />
             </button>
         </div>
 
@@ -26,9 +26,9 @@
                         @contextmenu.stop.prevent="$emit('contextmenu', { category: cat, clientX: $event.clientX, clientY: $event.clientY })"
                     >
                         <input
+                            :id="i === 0 ? 'all' : 'c' + (i - 1)"
                             type="radio"
                             name="category"
-                            :id="i === 0 ? 'all' : 'c' + (i - 1)"
                             :checked="active === cat"
                             @change="$emit('change', cat)"
                         />
