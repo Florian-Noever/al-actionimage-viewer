@@ -5,18 +5,18 @@
         </div>
 
         <div class="search">
-            <span class="icon" v-html="inlineSvg(searchIcon)" aria-hidden="true"></span>
+            <span class="icon" aria-hidden="true" v-html="inlineSvg(searchIcon)" />
             <input
                 ref="searchInputRef"
                 type="text"
                 :value="searchQuery"
-                placeholder='Search'
+                placeholder="Search"
                 aria-label="Search images"
                 spellcheck="false"
                 @input="onSearchInput"
             />
             <button title="Clear search" aria-label="Clear search" @click="onClear">
-                <span class="icon" v-html="inlineSvg(closeIcon)" aria-hidden="true"></span>
+                <span class="icon" aria-hidden="true" v-html="inlineSvg(closeIcon)" />
             </button>
         </div>
 
@@ -25,7 +25,7 @@
         <div class="right-group">
             <div class="zoom">
                 <button title="Zoom Out (-)" aria-label="Zoom Out" @click="$emit('zoomOut')">
-                    <span class="icon" v-html="inlineSvg(zoomOutIcon)" aria-hidden="true"></span>
+                    <span class="icon" aria-hidden="true" v-html="inlineSvg(zoomOutIcon)" />
                 </button>
                 <input
                     type="range"
@@ -37,7 +37,7 @@
                     @input="onSlider"
                 />
                 <button title="Zoom In (+)" aria-label="Zoom In" @click="$emit('zoomIn')">
-                    <span class="icon" v-html="inlineSvg(zoomInIcon)" aria-hidden="true"></span>
+                    <span class="icon" aria-hidden="true" v-html="inlineSvg(zoomInIcon)" />
                 </button>
                 <span class="zoomPct">{{ Math.round(zoom * 100) }}%</span>
             </div>
@@ -48,11 +48,11 @@
                 :aria-label="sortAscending ? 'Sort ascending' : 'Sort descending'"
                 @click="$emit('sort')"
             >
-                <span class="icon" v-html="inlineSvg(sortAscending ? sortAscIcon : sortDescIcon)" aria-hidden="true"></span>
+                <span class="icon" aria-hidden="true" v-html="inlineSvg(sortAscending ? sortAscIcon : sortDescIcon)" />
             </button>
 
             <button class="reload" title="Reload (F5)" aria-label="Reload" @click="$emit('reload')">
-                <span class="icon" v-html="inlineSvg(reloadIcon)" aria-hidden="true"></span>
+                <span class="icon" aria-hidden="true" v-html="inlineSvg(reloadIcon)" />
             </button>
         </div>
     </div>

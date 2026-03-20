@@ -199,7 +199,10 @@ watch([() => props.tileW, () => props.tileH], () => {
     if (anchorTimer) {
         clearTimeout(anchorTimer);
     }
-    anchorTimer = setTimeout(() => { anchorIndex = null; anchorTimer = null; }, 1000);
+    anchorTimer = setTimeout(() => {
+        anchorIndex = null;
+        anchorTimer = null;
+    }, 1000);
 
     const captured = anchorIndex;
     nextTick(() => {
