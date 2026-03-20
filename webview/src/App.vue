@@ -115,8 +115,8 @@ const sidebarMode = isSidebarMode();
 const rootRef = ref<HTMLElement | null>(null);
 const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(
     rootRef,
-    sidebarMode ? undefined : zoom,
-    sidebarMode ? undefined : applyZoom,
+    zoom,
+    applyZoom,
 );
 
 // ---- Debug ----
