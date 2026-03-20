@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { log } from "../extension";
 import { handleLoadImages } from '../handlers/loadImages';
 import { handleNotify } from '../handlers/notify';
 import { handleExportImage } from '../handlers/exportImage';
 import { handleExportCategory } from '../handlers/exportCategory';
+import { Logger } from './logger';
 
 export async function handleWebviewMessage(context: vscode.ExtensionContext, webview: vscode.Webview, msg: any) {
-    log.info(`Received message from webview: ${JSON.stringify(msg)}`);
+    Logger.info(`Received message from webview: ${JSON.stringify(msg)}`);
 
     try {
         switch (msg?.type) {
@@ -26,7 +26,7 @@ export async function handleWebviewMessage(context: vscode.ExtensionContext, web
                 break;
         }
     } catch (e) {
-        log.error(`Error handling message of type "${msg?.type}": ${e instanceof Error ? e.message : String(e)}`);
+        Logger.error(`Error handling message of type "${msg?.type}": ${e instanceof Error ? e.message : String(e)}`);
         vscode.window.showErrorMessage(e instanceof Error ? e.message : String(e));
     }
 }

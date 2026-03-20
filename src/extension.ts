@@ -2,15 +2,13 @@ import * as vscode from 'vscode';
 import pkg from '../package.json';
 import { getWebviewHtml, handleWebviewMessage } from './utils/webviewUtils';
 import { ImageBrowserSidebarProvider } from './utils/imageBrowserSidebarProvider';
+import { Logger } from './utils/logger';
 
 export const MANIFEST = pkg;
 export const COMMAND_OPEN = pkg.contributes.commands[0].command;
 
-export let log: vscode.LogOutputChannel;
-
 export function activate(context: vscode.ExtensionContext) {
-	log = vscode.window.createOutputChannel(MANIFEST.displayName, { log: true });
-	context.subscriptions.push(log);
+	Logger.initialize(context);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(COMMAND_OPEN, async () => {
@@ -35,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider(MANIFEST.contributes.views['al-actionimage-viewer'][0].id, sidebarProvider)
 	);
 
-	log.info(`Successfully activated "${MANIFEST.displayName}" extension.`);
+	Logger.info(`Successfully activated "${MANIFEST.displayName}" extension.`);
 }
 
 export function deactivate() { }
