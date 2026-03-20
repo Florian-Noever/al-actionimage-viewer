@@ -102,15 +102,15 @@ import { GAP } from './constants';
 // Inject layout design tokens as CSS custom properties on <html>
 useDesignTokens();
 
+// ---- Zoom ----
+const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
+
 // ---- Rail collapse ----
 const rootRef = ref<HTMLElement | null>(null);
-const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(rootRef);
+const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(rootRef, zoom, applyZoom);
 
 // ---- Debug ----
 const { debugActive, toggle: toggleDebug } = useDebug();
-
-// ---- Zoom ----
-const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
 
 // ---- Selection ----
 const selectedName = ref<string | null>(null);
