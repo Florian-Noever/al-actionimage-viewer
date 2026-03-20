@@ -2,7 +2,7 @@
   "name": "al-actionimage-viewer",
   "displayName": "AL ActionImage Viewer",
   "description": "View, Search and Copy AL Action Images",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "publisher": "Florian-Noever",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -14,6 +14,8 @@
     "url": "https://github.com/Florian-Noever/al-actionimage-viewer/issues"
   },
   "homepage": "https://github.com/Florian-Noever/al-actionimage-viewer",
+  "markdown": "github",
+  "qna": "github",
   "keywords": [
     "AL",
     "Business Central",
