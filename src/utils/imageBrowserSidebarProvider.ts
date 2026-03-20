@@ -14,7 +14,7 @@ export class ImageBrowserSidebarProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'public')],
         };
 
-        webviewView.webview.html = getWebviewHtml(webviewView.webview, this.context.extensionUri);
+        webviewView.webview.html = getWebviewHtml(webviewView.webview, this.context.extensionUri, true);
 
         webviewView.webview.onDidReceiveMessage(async (msg) => {
             await handleWebviewMessage(this.context, webviewView.webview, msg);

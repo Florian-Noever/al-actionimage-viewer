@@ -31,7 +31,7 @@ export async function handleWebviewMessage(context: vscode.ExtensionContext, web
     }
 }
 
-export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri) {
+export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri, sidebarMode = false) {
     const mediaPath = vscode.Uri.joinPath(extUri, 'public');
 
     const indexPath = vscode.Uri.joinPath(mediaPath, 'index.html');
@@ -46,6 +46,7 @@ export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri) {
         .replace(/%STYLE_URI%/g, String(stylesUri))
         .replace(/%APP_URI%/g, String(appUri))
         .replace(/%CSP_SOURCE%/g, String(cspSource))
+        .replace(/%SIDEBAR_MODE%/g, String(sidebarMode))
         .replace(/%NONCE%/g, nonce);
 }
 
