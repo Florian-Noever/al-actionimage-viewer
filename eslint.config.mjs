@@ -24,10 +24,11 @@ export default [...pluginVue.configs["flat/recommended"], {
             { selector: "classProperty", format: ["camelCase"], leadingUnderscore: "allow" },
         ],
 
+        "@typescript-eslint/no-explicit-any": "warn",
         "brace-style": ["warn", "1tbs"],
         curly: "warn",
         eqeqeq: "warn",
-        indent: ["warn", 4],
+        indent: ["warn", 4, { SwitchCase: 1 }],
         "no-throw-literal": "warn",
         quotes: ["warn", "single", { avoidEscape: true }],
         semi: "warn",

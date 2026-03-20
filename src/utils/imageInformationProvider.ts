@@ -12,19 +12,19 @@ enum Platform {
 }
 
 let executableBitSet = false;
-const exeName = 'AL-ActionImage-Viewer.ImageInformationProvider';
-const navCodeAnalysisDll = 'Microsoft.Dynamics.Nav.CodeAnalysis.dll';
+const EXE_NAME = 'AL-ActionImage-Viewer.ImageInformationProvider';
+const NAV_CODE_ANALYSIS_DLL = 'Microsoft.Dynamics.Nav.CodeAnalysis.dll';
 
 function platformFolder(): Platform {
     switch (process.platform) {
-    case 'win32':
-        return Platform.Windows;
-    case 'linux':
-        return Platform.Linux;
-    case 'darwin':
-        return Platform.MacOS;
-    default:
-        throw new Error(`Unsupported platform: ${process.platform}`);
+        case 'win32':
+            return Platform.Windows;
+        case 'linux':
+            return Platform.Linux;
+        case 'darwin':
+            return Platform.MacOS;
+        default:
+            throw new Error(`Unsupported platform: ${process.platform}`);
     }
 }
 
@@ -32,8 +32,8 @@ export function getBridgeBinaryPath(extensionRoot: string): string {
     const folder = platformFolder();
     const file =
         folder === Platform.Windows
-        	? `${exeName}.exe`
-        	: exeName; // No extension on Unix-based platforms
+            ? `${EXE_NAME}.exe`
+            : EXE_NAME; // No extension on Unix-based platforms
     return path.join(extensionRoot, 'bin', folder, file);
 }
 
@@ -46,7 +46,7 @@ export function getNavCodeAnalysisDllPath(): string | undefined {
     if (!alExt) {
         return;
     }
-    return path.join(alExt.extensionPath, 'bin', platformFolder(), navCodeAnalysisDll);
+    return path.join(alExt.extensionPath, 'bin', platformFolder(), NAV_CODE_ANALYSIS_DLL);
 }
 
 export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformation[]>> {

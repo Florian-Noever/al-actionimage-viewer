@@ -15,8 +15,8 @@ export async function handleExportImage(msg: { payload?: ExportImagePayload }): 
 
         const defaultExt =
             mime === 'image/png' ? 'png' :
-            	mime === 'image/jpeg' ? 'jpg' :
-            		mime === 'image/webp' ? 'webp' : 'bin';
+                mime === 'image/jpeg' ? 'jpg' :
+                    mime === 'image/webp' ? 'webp' : 'bin';
 
         const uri = await vscode.window.showSaveDialog({
             saveLabel: 'Export Image',

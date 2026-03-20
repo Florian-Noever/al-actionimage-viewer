@@ -6,32 +6,37 @@ import { handleExportImage } from '../handlers/exportImage';
 import { handleExportCategory } from '../handlers/exportCategory';
 import { Logger } from './logger';
 
-export async function handleWebviewMessage(context: vscode.ExtensionContext, webview: vscode.Webview, msg: any) {
+export async function handleWebviewMessage(context: vscode.ExtensionContext, webview: vscode.Webview, msg: unknown): Promise<void> {
     Logger.info(`Received message from webview: ${JSON.stringify(msg)}`);
 
+    if (typeof msg !== 'object' || msg === null) {
+        return;
+    }
+    const { type } = msg as Record<string, unknown>;
+
     try {
-        switch (msg?.type) {
-        case 'ready':
-        case 'retry':
-            await handleLoadImages(context, webview);
-            break;
-        case 'notify':
-            handleNotify(msg);
-            break;
-        case 'export-image':
-            await handleExportImage(msg);
-            break;
-        case 'export-category':
-            await handleExportCategory(msg);
-            break;
+        switch (type) {
+            case 'ready':
+            case 'retry':
+                await handleLoadImages(context, webview);
+                break;
+            case 'notify':
+                handleNotify(msg as Parameters<typeof handleNotify>[0]);
+                break;
+            case 'export-image':
+                await handleExportImage(msg as Parameters<typeof handleExportImage>[0]);
+                break;
+            case 'export-category':
+                await handleExportCategory(msg as Parameters<typeof handleExportCategory>[0]);
+                break;
         }
     } catch (e) {
-        Logger.error(`Error handling message of type "${msg?.type}": ${e instanceof Error ? e.message : String(e)}`);
+        Logger.error(`Error handling message of type "${type}": ${e instanceof Error ? e.message : String(e)}`);
         vscode.window.showErrorMessage(e instanceof Error ? e.message : String(e));
     }
 }
 
-export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri, sidebarMode = false) {
+export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri, sidebarMode = false): string {
     const mediaPath = vscode.Uri.joinPath(extUri, 'public');
 
     const indexPath = vscode.Uri.joinPath(mediaPath, 'index.html');

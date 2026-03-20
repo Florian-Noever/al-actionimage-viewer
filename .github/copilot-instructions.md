@@ -267,6 +267,7 @@ App.vue mounts
   - `kebab-case` — CSS class names and file names
   - Interface `I`-prefix is **C# only** — TS interfaces (e.g. `ImageInformationDTO`) are not prefixed
 - **Null / optionals**: prefer `??` over `||` for defaults; prefer `?.` over explicit null checks
+- **`any` vs `unknown`**: never use `any`; use `unknown` at system boundaries (incoming webview messages, external JSON) and narrow with type guards before use
 - **Error handling**: `try/catch` → `Logger.error(...)` → re-throw or surface via `vscode.window.showErrorMessage`
 
 ### Braces and control flow (TypeScript/Vue)
@@ -280,6 +281,17 @@ App.vue mounts
   // ✓
   if (x) {
       return; // 4-space indent
+  }
+  ```
+- Empty function / constructor bodies: `{ }` with a single space — `deactivate() { }`
+- `switch` statement: `case` labels indented 4 spaces inside the `switch` block:
+  ```ts
+  switch (type) {
+      case 'ready':
+          doSomething();
+          break;
+      default:
+          break;
   }
   ```
 
