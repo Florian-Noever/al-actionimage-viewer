@@ -6,15 +6,19 @@ export { ZOOM_MIN, ZOOM_MAX, ZOOM_STEP };
 
 const zoom = ref(ZOOM_DEFAULT);
 
+function setCssVars(newZoom: number): void {
+    document.documentElement.style.setProperty('--tile-w', Math.round(BASE_TILE_W * newZoom) + 'px');
+    document.documentElement.style.setProperty('--tile-h', Math.round(BASE_TILE_H * newZoom) + 'px');
+    document.documentElement.style.setProperty('--img', Math.round(BASE_IMG * newZoom) + 'px');
+}
+
 function applyZoom(newZoom: number): void {
     newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +newZoom));
     if (!isFinite(newZoom) || newZoom === zoom.value) {
         return;
     }
     zoom.value = newZoom;
-    document.documentElement.style.setProperty('--tile-w', Math.round(BASE_TILE_W * newZoom) + 'px');
-    document.documentElement.style.setProperty('--tile-h', Math.round(BASE_TILE_H * newZoom) + 'px');
-    document.documentElement.style.setProperty('--img', Math.round(BASE_IMG * newZoom) + 'px');
+    setCssVars(newZoom);
     try {
         setState({ ...(getState<Record<string, unknown>>() ?? {}), zoom: newZoom });
     } catch (err) {
@@ -22,9 +26,17 @@ function applyZoom(newZoom: number): void {
     }
 }
 
-function zoomIn(): void { applyZoom(zoom.value + ZOOM_STEP); }
-function zoomOut(): void { applyZoom(zoom.value - ZOOM_STEP); }
-function resetZoom(): void { applyZoom(ZOOM_DEFAULT); }
+function zoomIn(): void {
+    applyZoom(zoom.value + ZOOM_STEP); 
+}
+
+function zoomOut(): void {
+    applyZoom(zoom.value - ZOOM_STEP); 
+}
+
+function resetZoom(): void {
+    applyZoom(ZOOM_DEFAULT); 
+}
 
 const tileW = computed(() => Math.round(BASE_TILE_W * zoom.value));
 const tileH = computed(() => Math.round(BASE_TILE_H * zoom.value));
@@ -62,13 +74,15 @@ function setupKeyboardHandlers(): () => void {
 
 export function useZoom() {
     onMounted(() => {
-        // Restore persisted zoom
+        // Restore persisted zoom only when a value was explicitly saved
         try {
             const state = getState<{ zoom?: number; }>();
-            applyZoom(state?.zoom ?? ZOOM_DEFAULT);
-        } catch {
-            applyZoom(ZOOM_DEFAULT);
-        }
+            if (state?.zoom !== undefined) {
+                applyZoom(state.zoom);
+            }
+        } catch { }
+        // Initialize CSS vars to the current zoom
+        setCssVars(zoom.value);
         const cleanup = setupKeyboardHandlers();
         onUnmounted(cleanup);
     });
