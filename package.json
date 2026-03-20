@@ -74,7 +74,7 @@
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build",
     "dev:webview": "vite --open",
-    "lint": "eslint src",
+    "lint": "eslint src webview",
     "package": "npx -y @vscode/vsce package",
     "test": "npm run compile && node ./out/test/runTests.js"
   },
