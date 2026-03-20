@@ -249,3 +249,78 @@ App.vue mounts
 - **No VS Code API in webview**: The webview communicates only through `vscode.ts` (`postMessage` / `getState` / `setState`). Never import `vscode` in webview code.
 - **ExtensionKind `ui`**: The extension must only run on the local (UI) machine, not a remote server, because it reads the local filesystem for the AL DLL.
 - **Logging**: Use the static `Logger` class from `src/utils/logger.ts` (`Logger.info/warn/error/debug/trace`) in all extension code. It wraps a `vscode.LogOutputChannel` initialised in `extension.ts`.
+
+---
+
+## Code Style
+
+### TypeScript / JavaScript (`src/` and `webview/src/`)
+
+- **Indentation**: tabs
+- **Quotes**: single quotes for strings
+- **Semicolons**: always
+- **Type annotations**: minimal — rely on inference for local variables; explicitly annotate exported function signatures and their parameters
+- **Naming**:
+  - `camelCase` — variables, functions, composable return values
+  - `PascalCase` — classes, interfaces, types, Vue SFCs
+  - `UPPER_SNAKE_CASE` — module-level constants
+  - `kebab-case` — CSS class names and file names
+  - Interface `I`-prefix is **C# only** — TS interfaces (e.g. `ImageInformationDTO`) are not prefixed
+- **Null / optionals**: prefer `??` over `||` for defaults; prefer `?.` over explicit null checks
+- **Error handling**: `try/catch` → `Logger.error(...)` → re-throw or surface via `vscode.window.showErrorMessage`
+
+### Braces and control flow (TypeScript/Vue)
+
+- Always use braces for `if` / `else` / `for` / `while` — never omit
+- Body always on its own line — single-line `if (x) { return; }` is forbidden:
+  ```ts
+  // ✗
+  if (x) { return; }
+
+  // ✓
+  if (x) {
+      return;
+  }
+  ```
+
+### Multiline statements (TypeScript/Vue)
+
+- **`import` declarations**: always single-line — never split across lines
+- **Function / method definitions**: keep the signature on one line
+- **Function / method calls**: single-line by default; split to multiline only when multiple arguments make the line hard to read (e.g. a call with an options object). When splitting, put each argument on its own line:
+  ```ts
+  // ✓ — short call, stays single-line
+  panel.webview.postMessage({ type: 'ready' });
+
+  // ✓ — complex call, split for readability
+  const panel = vscode.window.createWebviewPanel(
+      'al-actionimage-viewer.panel',
+      MANIFEST.displayName,
+      vscode.ViewColumn.One,
+      {
+          enableScripts: true,
+          retainContextWhenHidden: true,
+          localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'public')],
+      }
+  );
+  ```
+- **Object / array literals in arguments**: inline when short; block-indented when the literal has multiple keys or entries
+
+### Vue SFCs (`webview/`)
+
+- Always use `<script setup>` (Composition API)
+- No business logic inline in components — extract to composables in `composables/`
+- One `defineEmits` block per component
+- Props typed with `defineProps<T>()`, not runtime objects
+
+### C# (`AL-ActionImage-Viewer.ImageInformationProvider/`)
+
+- File-scoped namespaces
+- `var` for local variable declarations
+- Expression-bodied members where they improve readability
+- XML doc comments on public API only; interfaces prefixed with `I` (e.g. `IImageProvider`)
+- Braces on `if` / `else` / `for` may be omitted for a single-line body (e.g. guard clauses)
+
+### General
+
+- Comments only where logic is non-obvious — prefer self-documenting code
