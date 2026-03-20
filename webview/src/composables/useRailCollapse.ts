@@ -28,7 +28,7 @@ export function useRailCollapse(rootRef: Ref<HTMLElement | null>, zoomRef?: Ref<
             railCollapsed.value = true;
             autoCollapsed.value = true;
             if (zoomRef && applyZoom && zoomRef.value === ZOOM_DEFAULT) {
-                applyZoom(ZOOM_DEFAULT * 0.6);
+                applyZoom(ZOOM_DEFAULT * 0.55); // zoom out to 55% at narrow widths
                 autoZoomed = true;
             }
         } else if (width >= RAIL_AUTO_EXPAND_WIDTH && autoCollapsed.value) {

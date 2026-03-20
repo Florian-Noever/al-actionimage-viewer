@@ -86,7 +86,7 @@ const focusedIndex = ref<number | null>(null);
 
 const columns = computed(() => {
     const colSpace = props.tileW + props.gap;
-    return Math.max(1, Math.floor((containerWidth.value - GRID_PAD * 2) / colSpace));
+    return Math.max(1, Math.floor((containerWidth.value - GRID_PAD * 2 + props.gap) / colSpace));
 });
 
 const totalRows = computed(() => Math.ceil(props.items.length / columns.value));
