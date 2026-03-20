@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import * as path from 'path';
 import * as fs from 'fs';
-import type { ImageInformation } from '../../types/imageInformationDTO';
+import type { ImageInformationDTO } from '../../types/imageInformationDTO';
 import { readFromBridgeStdout } from '../../utils/binaryReader';
 import { getBridgeBinaryPath, getNavCodeAnalysisDllPath } from '../../utils/imageInformationProvider';
 
 suite('Bridge Integration', () => {
-    let result: Record<string, ImageInformation[]>;
+    let result: Record<string, ImageInformationDTO[]>;
 
     suiteSetup(async function () {
         const extensionRoot = path.resolve(__dirname, '../../../');

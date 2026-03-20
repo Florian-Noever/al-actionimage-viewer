@@ -27,3 +27,9 @@ export const ZOOM_DEFAULT = 1.0;
 // --- Grid ---
 export const GRID_PAD = 12;
 export const GRID_OVERSCAN = 4;
+
+/**
+ * Original pixel size of AL action images as shipped in the AL Language extension.
+ * Used to determine whether upscaled (pixelated) rendering should be applied.
+ */
+export const IMAGE_ORIGINAL_SIZE = 32;

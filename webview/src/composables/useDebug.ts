@@ -2,9 +2,9 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const CLASS = 'debug-borders';
 
-export const debugActive = ref(false);
-
 export function useDebug() {
+    const debugActive = ref(false);
+
     function toggle(): void {
         debugActive.value = !debugActive.value;
         document.documentElement.classList.toggle(CLASS, debugActive.value);

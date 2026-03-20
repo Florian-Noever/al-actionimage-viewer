@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { ImageInformation, ImageInformationDTO } from '../types/imageInformationDTO';
+import { ImageInformationDTO } from '../types/imageInformationDTO';
 import { Logger } from './logger';
 
 class BinaryReader {
@@ -48,7 +48,7 @@ class BinaryReader {
         for (let i = 0; i < count; i++) {
             const s = this.readString();
             if (s !== null) {
-                arr.push(s); 
+                arr.push(s);
             }
         }
         return arr;
@@ -69,11 +69,11 @@ function readItem(br: BinaryReader): ImageInformationDTO {
     };
 }
 
-function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
+function parseBridgePayload(buf: Buffer): Record<string, ImageInformationDTO[]> {
     const br = new BinaryReader(buf);
     const groupCount = br.readInt32();
 
-    const dict: Record<string, ImageInformation[]> = {};
+    const dict: Record<string, ImageInformationDTO[]> = {};
     const maxGroups =
         groupCount > 0 ? groupCount : Number.MAX_SAFE_INTEGER;
 
@@ -93,7 +93,7 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
         }
 
         const itemCount = br.readInt32();
-        const items: ImageInformation[] = [];
+        const items: ImageInformationDTO[] = [];
 
         if (itemCount >= 0) {
             for (let i = 0; i < itemCount; i++) {
@@ -110,7 +110,7 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
                 const nameBytes = br.readBytes(marker);
                 const name = new TextDecoder().decode(nameBytes);
 
-                const dto: ImageInformation = {
+                const dto: ImageInformationDTO = {
                     name,
                     category: br.readString(),
                     tags: br.readStringArray(),
@@ -127,7 +127,7 @@ function parseBridgePayload(buf: Buffer): Record<string, ImageInformation[]> {
 }
 
 // ---- Public API: spawn the bridge, collect stdout, parse, return ----
-export async function readFromBridgeStdout(bridgeExePath: string, args: string[] = []): Promise<Record<string, ImageInformation[]>> {
+export async function readFromBridgeStdout(bridgeExePath: string, args: string[] = []): Promise<Record<string, ImageInformationDTO[]>> {
     return new Promise((resolve, reject) => {
         const child = spawn(bridgeExePath, args, {
             stdio: ['ignore', 'pipe', 'pipe'], // read stdout, show stderr
@@ -136,13 +136,13 @@ export async function readFromBridgeStdout(bridgeExePath: string, args: string[]
 
         const chunks: Buffer[] = [];
         child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
-        child.stderr.on('data', (e) => Logger.info(e.toString()));
+        child.stderr.on('data', (e) => Logger.info(`[bridge stderr] ${e.toString().trimEnd()}`)); // c# stderr is used for logging
         child.once('error', reject);
 
         child.once('close', (code) => {
             try {
                 if (code !== 0 && code !== null) {
-                    // Non-zero exit isn't necessarily fatal, so continue
+                    Logger.warn(`Bridge process exited with non-zero code ${code}; attempting to parse partial output.`);
                 }
                 const buf = Buffer.concat(chunks);
                 const result = parseBridgePayload(buf);

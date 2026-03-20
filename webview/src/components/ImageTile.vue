@@ -29,8 +29,7 @@
 import { computed } from 'vue';
 import placeholderSrc from '../assets/image.svg';
 import type { ImageInformationDTO } from '../types/imageInformationDTO';
-
-const ORIGINAL_IMG_SIZE = 32; // Assuming all images are 32px
+import { IMAGE_ORIGINAL_SIZE } from '../constants';
 
 const props = defineProps<{ 
     item: ImageInformationDTO;
@@ -54,7 +53,7 @@ function onFocused(): void {
 }
 
 // Determine if image is upscaled relative to original 32px size
-const upscaled = computed(() => props.imgSize >= ORIGINAL_IMG_SIZE);
+const upscaled = computed(() => props.imgSize >= IMAGE_ORIGINAL_SIZE);
 
 function onDragStart(e: DragEvent): void {
     if (!e.dataTransfer || !props.item.imageDataUrl) {

@@ -5,35 +5,41 @@ import { handleNotify } from '../handlers/notify';
 import { handleExportImage } from '../handlers/exportImage';
 import { handleExportCategory } from '../handlers/exportCategory';
 import { Logger } from './logger';
+import { isWebviewMessage } from '../types/webviewMessages';
 
 export async function handleWebviewMessage(context: vscode.ExtensionContext, webview: vscode.Webview, msg: unknown): Promise<void> {
     Logger.info(`Received message from webview: ${JSON.stringify(msg)}`);
 
-    if (typeof msg !== 'object' || msg === null) {
+    if (!isWebviewMessage(msg)) {
         return;
     }
-    const { type } = msg as Record<string, unknown>;
 
     try {
-        switch (type) {
+        switch (msg.type) {
             case 'ready':
             case 'retry':
                 await handleLoadImages(context, webview);
                 break;
             case 'notify':
-                handleNotify(msg as Parameters<typeof handleNotify>[0]);
+                handleNotify(msg);
                 break;
             case 'export-image':
-                await handleExportImage(msg as Parameters<typeof handleExportImage>[0]);
+                await handleExportImage(msg);
                 break;
             case 'export-category':
-                await handleExportCategory(msg as Parameters<typeof handleExportCategory>[0]);
+                await handleExportCategory(msg);
                 break;
         }
     } catch (e) {
-        Logger.error(`Error handling message of type "${type}": ${e instanceof Error ? e.message : String(e)}`);
+        Logger.error(`Error handling message of type "${msg.type}": ${e instanceof Error ? e.message : String(e)}`);
         vscode.window.showErrorMessage(e instanceof Error ? e.message : String(e));
     }
+}
+
+export function setupWebviewMessageListener(context: vscode.ExtensionContext, webview: vscode.Webview): vscode.Disposable {
+    return webview.onDidReceiveMessage(async (msg) => {
+        await handleWebviewMessage(context, webview, msg);
+    });
 }
 
 export function getWebviewHtml(webview: vscode.Webview, extUri: vscode.Uri, sidebarMode = false): string {

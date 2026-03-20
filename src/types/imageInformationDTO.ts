@@ -4,5 +4,3 @@ export interface ImageInformationDTO {
     tags: string[];
     imageDataUrl?: string | null;
 }
-
-export type ImageInformation = ImageInformationDTO;

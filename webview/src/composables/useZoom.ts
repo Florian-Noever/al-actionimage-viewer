@@ -17,7 +17,9 @@ function applyZoom(newZoom: number): void {
     document.documentElement.style.setProperty('--img', Math.round(BASE_IMG * newZoom) + 'px');
     try {
         setState({ ...(getState<Record<string, unknown>>() ?? {}), zoom: newZoom });
-    } catch { /* swallow */ }
+    } catch (err) {
+        console.warn('Failed to persist zoom state:', err);
+    }
 }
 
 function zoomIn(): void { applyZoom(zoom.value + ZOOM_STEP); }

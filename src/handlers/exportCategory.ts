@@ -1,15 +1,8 @@
 import * as vscode from 'vscode';
+import { wrapError } from '../utils/errors';
+import type { WebviewMessage } from '../types/webviewMessages';
 
-interface ExportImagePayload {
-    name: string;
-    mime: string;
-    base64: string;
-}
-
-interface ExportCategoryPayload {
-    category: string;
-    images: ExportImagePayload[];
-}
+type ExportCategoryMessage = Extract<WebviewMessage, { type: 'export-category' }>;
 
 const EXT_MAP: Record<string, string> = {
     'image/png': 'png',
@@ -19,7 +12,7 @@ const EXT_MAP: Record<string, string> = {
     'image/webp': 'webp',
 };
 
-export async function handleExportCategory(msg: { payload?: ExportCategoryPayload; }): Promise<void> {
+export async function handleExportCategory(msg: ExportCategoryMessage): Promise<void> {
     try {
         const { category, images } = msg.payload ?? {};
         if (!category || !images?.length) {
@@ -69,10 +62,6 @@ export async function handleExportCategory(msg: { payload?: ExportCategoryPayloa
 
         vscode.window.showInformationMessage(`Exported ${written} image${written !== 1 ? 's' : ''} to: ${folderUri.fsPath}`);
     } catch (e) {
-        if (e instanceof Error) {
-            throw new Error(`Export Category failed: ${e.message}`, { cause: e });
-        }
-
-        throw new Error(`Export Category failed: ${String(e)}`);
+        wrapError('Export Category', e);
     }
 }

@@ -1,5 +1,13 @@
 import { postMessage } from './vscode';
 
+/**
+ * Replaces all fill color attributes in an SVG string with `currentColor`
+ * so the icon inherits its color from CSS.
+ */
+export function inlineSvg(raw: string): string {
+    return raw.replace(/fill=['"][^'"]*['"]/g, 'fill="currentColor"');
+}
+
 export function parseDataUrl(dataUrl: string): { mime: string; base64: string; byteLength: number; } | null {
     const m = /^data:([^;]+);base64,(.*)$/.exec(dataUrl || '');
     if (!m) {

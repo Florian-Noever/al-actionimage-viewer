@@ -43,10 +43,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import chevronLeftIcon from '../assets/chevron_left.svg?raw';
-
-function inlineSvg(raw: string): string {
-    return raw.replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"');
-}
+import { inlineSvg } from '../utils';
 
 const props = defineProps<{
     categories: string[];
@@ -73,8 +70,6 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     display: flex;
     flex-direction: column;
 }
-
-
 
 .rail-body {
     overflow: hidden;
