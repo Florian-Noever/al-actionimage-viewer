@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { ImageInformation, ImageInformationDTO } from '../types/imageInformationDTO';
-import { log } from '../extension';
+import { Logger } from './logger';
 
 class BinaryReader {
     private buf: Buffer;
@@ -134,7 +134,7 @@ export async function readFromBridgeStdout(bridgeExePath: string, args: string[]
 
         const chunks: Buffer[] = [];
         child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
-        child.stderr.on('data', (e) => log?.info(e.toString()));
+        child.stderr.on('data', (e) => Logger.info(e.toString()));
         child.once('error', reject);
 
         child.once('close', (code) => {
