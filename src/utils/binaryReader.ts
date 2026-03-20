@@ -47,7 +47,9 @@ class BinaryReader {
         const arr: string[] = [];
         for (let i = 0; i < count; i++) {
             const s = this.readString();
-            if (s !== null) { arr.push(s); }
+            if (s !== null) {
+                arr.push(s); 
+            }
         }
         return arr;
     }

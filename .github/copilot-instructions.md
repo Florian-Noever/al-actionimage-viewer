@@ -256,7 +256,7 @@ App.vue mounts
 
 ### TypeScript / JavaScript (`src/` and `webview/src/`)
 
-- **Indentation**: tabs
+- **Indentation**: 4 spaces
 - **Quotes**: single quotes for strings
 - **Semicolons**: always
 - **Type annotations**: minimal — rely on inference for local variables; explicitly annotate exported function signatures and their parameters
@@ -279,7 +279,7 @@ App.vue mounts
 
   // ✓
   if (x) {
-      return;
+      return; // 4-space indent
   }
   ```
 

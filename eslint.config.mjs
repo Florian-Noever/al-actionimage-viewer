@@ -16,14 +16,20 @@ export default [...pluginVue.configs["flat/recommended"], {
     },
 
     rules: {
-        "@typescript-eslint/naming-convention": ["warn", {
-            selector: "import",
-            format: ["camelCase", "PascalCase"],
-        }],
+        "@typescript-eslint/naming-convention": ["warn",
+            { selector: "import", format: ["camelCase", "PascalCase"] },
+            { selector: "variable", format: ["camelCase", "UPPER_CASE", "PascalCase"], leadingUnderscore: "allow" },
+            { selector: "function", format: ["camelCase", "PascalCase"] },
+            { selector: "typeLike", format: ["PascalCase"] },
+            { selector: "classProperty", format: ["camelCase"], leadingUnderscore: "allow" },
+        ],
 
+        "brace-style": ["warn", "1tbs"],
         curly: "warn",
         eqeqeq: "warn",
+        indent: ["warn", 4],
         "no-throw-literal": "warn",
+        quotes: ["warn", "single", { avoidEscape: true }],
         semi: "warn",
     },
 }];
