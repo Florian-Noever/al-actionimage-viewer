@@ -23,3 +23,8 @@ export function setState<T = unknown>(state: T): void {
 }
 
 export const isVscode = !!_vscode;
+
+/** True when the webview is running inside the VS Code sidebar panel (not the full editor panel). */
+export function isSidebarMode(): boolean {
+    return document.documentElement.dataset.sidebarMode === 'true';
+}

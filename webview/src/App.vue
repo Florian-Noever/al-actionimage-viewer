@@ -1,6 +1,7 @@
 <template>
-    <div ref="rootRef" class="root" :class="{ 'rail-collapsed': railCollapsed }">
+    <div ref="rootRef" class="root" :class="{ 'rail-collapsed': railCollapsed, 'sidebar-mode': sidebarMode }">
         <CategoryRail
+            v-if="!sidebarMode"
             :categories="categories"
             :active="activeCategory"
             :collapsed="railCollapsed"
@@ -92,7 +93,7 @@ import { useDebug } from './composables/useDebug';
 import { useDesignTokens } from './composables/useDesignTokens';
 import { useRailCollapse } from './composables/useRailCollapse';
 import { useImageData } from './composables/useImageData';
-import { postMessage } from './vscode';
+import { postMessage, isSidebarMode } from './vscode';
 import { parseDataUrl, blobFromDataUrl, notify } from './utils';
 import type { ImageInformationDTO } from './types/imageInformationDTO';
 import type { ImageMap } from './types/imageInformationDTO';
@@ -105,9 +106,16 @@ useDesignTokens();
 // ---- Zoom ----
 const { zoom, tileW, tileH, imgSize, applyZoom, zoomIn, zoomOut } = useZoom();
 
+// ---- Sidebar mode ----
+const sidebarMode = isSidebarMode();
+
 // ---- Rail collapse ----
 const rootRef = ref<HTMLElement | null>(null);
-const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(rootRef, zoom, applyZoom);
+const { railCollapsed, toggleRailCollapse, restoreRailState } = useRailCollapse(
+    rootRef,
+    sidebarMode ? undefined : zoom,
+    sidebarMode ? undefined : applyZoom,
+);
 
 // ---- Debug ----
 const { debugActive, toggle: toggleDebug } = useDebug();
@@ -328,6 +336,10 @@ declare function acquireVsCodeApi(): unknown;
 
 .root.rail-collapsed {
     grid-template-columns: var(--rail-collapsed-w) 1fr;
+}
+
+.root.sidebar-mode {
+    grid-template-columns: 1fr;
 }
 
 .content {
