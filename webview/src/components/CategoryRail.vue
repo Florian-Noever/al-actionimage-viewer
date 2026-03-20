@@ -1,19 +1,21 @@
 <template>
     <aside class="rail" :class="{ collapsed }" @contextmenu.prevent>
-        <button
-            class="toggle-btn"
-            :title="collapsed ? 'Expand categories' : 'Collapse categories'"
-            :aria-label="collapsed ? 'Expand categories' : 'Collapse categories'"
-            :aria-expanded="!collapsed"
-            :style="collapsed ? 'transform: rotate(180deg)' : ''"
-            @click="$emit('toggle')"
-        >
-            <span class="icon" v-html="inlineSvg(chevronLeftIcon)" aria-hidden="true"></span>
-        </button>
+        <div class="rail-header">
+            <h3>Categories</h3>
+            <button
+                class="toggle-btn"
+                :title="collapsed ? 'Expand categories' : 'Collapse categories'"
+                :aria-label="collapsed ? 'Expand categories' : 'Collapse categories'"
+                :aria-expanded="!collapsed"
+                :style="collapsed ? 'transform: rotate(180deg)' : ''"
+                @click="$emit('toggle')"
+            >
+                <span class="icon" v-html="inlineSvg(chevronLeftIcon)" aria-hidden="true"></span>
+            </button>
+        </div>
 
         <Transition name="rail-content">
             <div v-show="!collapsed" class="rail-body">
-                <h3>Categories</h3>
                 <div role="radiogroup" aria-label="Image Categories">
                     <label
                         v-for="(cat, i) in allCategories"
@@ -89,31 +91,46 @@ const allCategories = computed(() => ['All Images', ...props.categories]);
     opacity: 0;
 }
 
+.rail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--btn-size);
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
 .rail h3 {
-    margin: 0 0 8px 0;
+    margin: 0;
     font-size: var(--font);
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
+    transition: opacity var(--duration-fast) ease, max-width var(--duration-base) ease;
+}
+
+.rail.collapsed h3 {
+    opacity: 0;
+    max-width: 0;
 }
 
 .toggle-btn {
     width: var(--btn-size);
     height: var(--btn-size);
-    padding: 0;
+    padding: 6px;
     appearance: none;
     border: none;
     background: transparent;
     color: var(--vscode-foreground);
     cursor: pointer;
-    padding: 6px;
     border-radius: var(--radius-sm);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    align-self: flex-end;
     flex-shrink: 0;
-    margin-bottom: 6px;
     opacity: 0.6;
     transition: transform var(--duration-slow) ease;
 }
