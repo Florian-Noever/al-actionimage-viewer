@@ -20,6 +20,7 @@
                 :zoom-step="ZOOM_STEP"
                 :search-query="searchQuery"
                 :sort-ascending="sortAscending"
+                :sidebar-mode="sidebarMode"
                 @zoom-in="zoomIn"
                 @zoom-out="zoomOut"
                 @zoom-set="applyZoom"

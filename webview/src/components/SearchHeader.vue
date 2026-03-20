@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <div class="title-group">
+        <div v-if="!sidebarMode" class="title-group">
             <div class="title">{{ title }}</div>
         </div>
 
@@ -82,6 +82,7 @@ const props = defineProps<{
     zoomStep: number;
     searchQuery: string;
     sortAscending: boolean;
+    sidebarMode?: boolean;
 }>();
 
 const emit = defineEmits<{
