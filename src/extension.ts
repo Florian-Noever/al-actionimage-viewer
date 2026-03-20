@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import pkg from '../package.json';
-import { getWebviewHtml, handleWebviewMessage } from './utils/webviewUtils';
+import { getWebviewHtml, setupWebviewMessageListener } from './utils/webviewUtils';
 import { ImageBrowserSidebarProvider } from './utils/imageBrowserSidebarProvider';
 import { Logger } from './utils/logger';
 
@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
             );
             panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'assets', 'icon.svg');
             panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
-            panel.webview.onDidReceiveMessage(async (msg) => await handleWebviewMessage(context, panel.webview, msg));
+            setupWebviewMessageListener(context, panel.webview);
         })
     );
 

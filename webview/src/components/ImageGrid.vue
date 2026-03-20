@@ -233,7 +233,12 @@ onMounted(() => {
         ro.observe(scrollerRef.value);
     }
 });
-onUnmounted(() => ro?.disconnect());
+onUnmounted(() => {
+    if (anchorTimer) {
+        clearTimeout(anchorTimer);
+    }
+    ro?.disconnect();
+});
 </script>
 
 <style scoped>

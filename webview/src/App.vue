@@ -96,6 +96,7 @@ import { useRailCollapse } from './composables/useRailCollapse';
 import { useImageData } from './composables/useImageData';
 import { postMessage, isSidebarMode } from './vscode';
 import { parseDataUrl, blobFromDataUrl, notify } from './utils';
+import { isExtensionMessage } from './types/extensionMessages';
 import type { ImageInformationDTO } from './types/imageInformationDTO';
 import type { ImageMap } from './types/imageInformationDTO';
 import hexagonSrc from './assets/hexagon.svg';
@@ -262,11 +263,10 @@ function requestReload(): void {
 
 // ---- Message handler ----
 function onMessage(evt: MessageEvent): void {
-    if (!evt.data || typeof evt.data.type !== 'string') {
+    if (!isExtensionMessage(evt.data)) {
         return;
     }
-    const { type, payload } = evt.data as { type: string; payload: unknown };
-    onDataMessage(type, payload);
+    onDataMessage(evt.data);
 }
 
 // ---- F5 reload + 1-9 category shortcut ----

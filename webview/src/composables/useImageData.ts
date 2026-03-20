@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import type { ImageMap } from '../types/imageInformationDTO';
+import type { ExtensionMessage } from '../types/extensionMessages';
 
 /**
  * Manages image data, loading state, and error state.
@@ -35,18 +36,18 @@ export function useImageData() {
         activeCategory.value = cat;
     }
 
-    function onDataMessage(type: string, payload: unknown): void {
-        switch (type) {
+    function onDataMessage(msg: ExtensionMessage): void {
+        switch (msg.type) {
             case 'loading':
-                showLoading((payload as { message?: string; })?.message || 'Loading...');
+                showLoading(msg.payload.message || 'Loading...');
                 break;
             case 'error':
-                showError((payload as { message?: string; })?.message || 'Failed to load.');
+                showError(msg.payload.message || 'Failed to load.');
                 break;
             case 'setData':
                 hideLoading();
                 hasError.value = false;
-                data.value = (payload as ImageMap) || {};
+                data.value = msg.payload || {};
                 categories.value = Object.keys(data.value);
                 activeCategory.value = 'All Images';
                 break;

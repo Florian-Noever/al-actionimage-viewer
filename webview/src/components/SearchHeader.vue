@@ -68,10 +68,7 @@ import sortAscIcon from '../assets/sort_by_alpha_asc.svg?raw';
 import sortDescIcon from '../assets/sort_by_alpha_desc.svg?raw';
 import zoomInIcon from '../assets/zoom_in.svg?raw';
 import zoomOutIcon from '../assets/zoom_out.svg?raw';
-
-function inlineSvg(raw: string): string {
-    return raw.replace(/fill="#[0-9a-fA-F]{3,8}"/g, 'fill="currentColor"');
-}
+import { inlineSvg } from '../utils';
 
 const props = defineProps<{
     title: string;

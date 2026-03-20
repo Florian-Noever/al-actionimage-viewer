@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
+import type { WebviewMessage } from '../types/webviewMessages';
 
-export function handleNotify(msg: { kind?: string; message?: string }): void {
+type NotifyMessage = Extract<WebviewMessage, { type: 'notify' }>;
+
+export function handleNotify(msg: NotifyMessage): void {
     const { kind = 'info', message = '' } = msg;
     if (kind === 'error') {
         vscode.window.showErrorMessage(message);

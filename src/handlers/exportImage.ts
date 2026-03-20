@@ -1,12 +1,10 @@
 import * as vscode from 'vscode';
+import { wrapError } from '../utils/errors';
+import type { WebviewMessage } from '../types/webviewMessages';
 
-interface ExportImagePayload {
-    name: string;
-    mime: string;
-    base64: string;
-}
+type ExportImageMessage = Extract<WebviewMessage, { type: 'export-image' }>;
 
-export async function handleExportImage(msg: { payload?: ExportImagePayload }): Promise<void> {
+export async function handleExportImage(msg: ExportImageMessage): Promise<void> {
     try {
         const { name, mime, base64 } = msg.payload ?? {};
         if (!name || !mime || !base64) {
@@ -34,10 +32,6 @@ export async function handleExportImage(msg: { payload?: ExportImagePayload }): 
         await vscode.workspace.fs.writeFile(uri, buf);
         vscode.window.showInformationMessage(`Saved: ${uri.fsPath}`);
     } catch (e) {
-        if (e instanceof Error) {
-            throw new Error(`Export Image failed: ${e.message}`, { cause: e });
-        }
-
-        throw new Error(`Export Image failed: ${String(e)}`);
+        wrapError('Export Image', e);
     }
 }

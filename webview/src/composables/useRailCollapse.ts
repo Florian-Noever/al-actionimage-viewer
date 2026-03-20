@@ -46,7 +46,9 @@ export function useRailCollapse(rootRef: Ref<HTMLElement | null>, zoomRef?: Ref<
         railCollapsed.value = !railCollapsed.value;
         try {
             setState({ ...(getState<Record<string, unknown>>() ?? {}), railCollapsed: railCollapsed.value });
-        } catch { /* swallow */ }
+        } catch (err) {
+            console.warn('Failed to persist rail state:', err);
+        }
     }
 
     function restoreRailState(): void {
@@ -55,7 +57,9 @@ export function useRailCollapse(rootRef: Ref<HTMLElement | null>, zoomRef?: Ref<
             if (state?.railCollapsed) {
                 railCollapsed.value = true;
             }
-        } catch { /* swallow */ }
+        } catch (err) {
+            console.warn('Failed to restore rail state:', err);
+        }
     }
 
     return { railCollapsed, toggleRailCollapse, restoreRailState };

@@ -3,7 +3,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { MANIFEST } from '../extension';
 import { readFromBridgeStdout } from './binaryReader';
-import { ImageInformation } from '../types/imageInformationDTO';
+import { ImageInformationDTO } from '../types/imageInformationDTO';
+import { Logger } from './logger';
 
 enum Platform {
     Windows = 'win32',
@@ -24,6 +25,7 @@ function platformFolder(): Platform {
         case 'darwin':
             return Platform.MacOS;
         default:
+            Logger.warn(`Unsupported platform: ${process.platform}`);
             throw new Error(`Unsupported platform: ${process.platform}`);
     }
 }
@@ -49,7 +51,7 @@ export function getNavCodeAnalysisDllPath(): string | undefined {
     return path.join(alExt.extensionPath, 'bin', platformFolder(), NAV_CODE_ANALYSIS_DLL);
 }
 
-export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformation[]>> {
+export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformationDTO[]>> {
     const bridgePath = getImageInfoProviderPath(context);
 
     // Ensure the binary is executable on non-Windows platforms
@@ -61,7 +63,10 @@ export async function getImageInformations(context: vscode.ExtensionContext): Pr
     const args: string[] = [];
     const dllPath = getNavCodeAnalysisDllPath();
     if (dllPath) {
+        Logger.info(`Using AL DLL at: ${dllPath}`);
         args.push('--dll-path', dllPath);
+    } else {
+        Logger.warn('AL Language extension DLL not found; bridge will attempt auto-discovery.');
     }
 
     return await readFromBridgeStdout(bridgePath, args);

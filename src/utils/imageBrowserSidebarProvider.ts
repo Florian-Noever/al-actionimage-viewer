@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWebviewHtml, handleWebviewMessage } from './webviewUtils';
+import { getWebviewHtml, setupWebviewMessageListener } from './webviewUtils';
 
 export class ImageBrowserSidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -16,8 +16,6 @@ export class ImageBrowserSidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = getWebviewHtml(webviewView.webview, this.context.extensionUri, true);
 
-        webviewView.webview.onDidReceiveMessage(async (msg) => {
-            await handleWebviewMessage(this.context, webviewView.webview, msg);
-        });
+        setupWebviewMessageListener(this.context, webviewView.webview);
     }
 }
