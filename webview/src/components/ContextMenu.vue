@@ -6,6 +6,7 @@
             class="ctxmenu"
             role="menu"
             aria-label="Image actions"
+            tabindex="-1"
             :style="menuStyle"
             @keydown="onMenuKeydown"
         >
@@ -72,6 +73,10 @@ function doAction(action: string): void {
     border-radius: var(--radius-sm);
     cursor: pointer;
     font: inherit;
+}
+
+.ctxmenu:focus {
+    outline: none;
 }
 
 .ctxitem:hover, .ctxitem:focus {

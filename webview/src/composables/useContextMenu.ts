@@ -37,7 +37,7 @@ export function useContextMenu(visible: Ref<boolean>, xProp: Ref<number>, yProp:
             if (menuY.value + rect.height > window.innerHeight) {
                 menuY.value = window.innerHeight - rect.height - 4;
             }
-            (menuRef.value.querySelector('[role="menuitem"]') as HTMLElement | null)?.focus();
+            menuRef.value.focus();
         } else {
             returnFocus.value?.focus();
             returnFocus.value = null;
@@ -51,10 +51,10 @@ export function useContextMenu(visible: Ref<boolean>, xProp: Ref<number>, yProp:
             emitClose();
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
-            items[(current + 1) % items.length]?.focus();
+            items[current === -1 ? 0 : (current + 1) % items.length]?.focus();
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            items[(current - 1 + items.length) % items.length]?.focus();
+            items[current === -1 ? items.length - 1 : (current - 1 + items.length) % items.length]?.focus();
         } else if (e.key === 'Tab') {
             e.preventDefault();
             emitClose();
