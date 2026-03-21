@@ -97,6 +97,7 @@ The TypeScript extension activates on the `al-actionimage-viewer.open` command a
 | `types/imageInformationDTO.ts` | TypeScript mirror of the C# DTO; exports `ImageInformationDTO` |
 | `types/webviewMessages.ts` | `WebviewMessage` discriminated union (webview → extension) with `ExportImagePayload`, `ExportCategoryPayload` interfaces and `isWebviewMessage()` type guard |
 | `utils/errors.ts` | `wrapError(operation, e)` — shared error-wrapping utility used by export handlers |
+| `esbuild.mjs` | Build script (workspace root) — bundles extension and tests via esbuild; see §Bundler above |
 
 ### Webview Setup
 - The extension reads `public/index.html` and injects `%STYLE_URI%`, `%APP_URI%`, `%CSP_SOURCE%`, `%NONCE%`, and `%SIDEBAR_MODE%` placeholders at runtime via `getWebviewHtml` in `webviewUtils.ts`.
@@ -131,11 +132,23 @@ All extension → webview messages are wrapped as `{ type, payload }`.
 
 ### Build
 ```bash
-npm run compile          # tsc compile extension to out/
-npm run watch            # tsc watch mode (default build task)
+npm run compile          # type-check + lint + esbuild extension + vite webview
+npm run watch            # parallel: esbuild --watch + tsc --noEmit --watch
+npm run compile-tests    # esbuild all test entry points into out/test/
 npm run build:webview    # vite build webview to public/
-npm run package          # vsce package (.vsix)
+npm run type-check       # tsc --noEmit only (no emit)
+npm run package          # vsce package (.vsix) — runs vscode:prepublish first
+npm run test             # compile-tests + compile + lint, then node ./out/test/runTests.js
 ```
+
+### Bundler (`esbuild.mjs`)
+The extension host is bundled with **esbuild** (not tsc). `tsc` is retained only for type-checking (`noEmit: true`). Key properties:
+- Single output file: `out/extension.js` (CJS, Node platform)
+- External: `vscode` only — all other imports are bundled
+- Sourcemaps: always on (`sourcemap: true`), external `.js.map` file, ships in VSIX
+- No minification of identifiers (`minify: false`)
+- `--watch` flag: esbuild context watch mode with `esbuildProblemMatcherPlugin` (requires `connor4312.esbuild-problem-matchers` extension for the `$esbuild-watch` problem matcher in `tasks.json`)
+- `--tests` flag: additionally bundles the three test entry points into `out/test/`
 
 ---
 

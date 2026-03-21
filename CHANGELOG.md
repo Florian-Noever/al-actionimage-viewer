@@ -4,6 +4,20 @@ All notable changes to **AL ActionImage Viewer** are documented in this file.
 
 ---
 
+## [1.0.1] – 2026-03-21
+
+### Changed
+
+- Extension host build switched from plain `tsc` to **esbuild**: all source files are now bundled into a single `out/extension.js`, reducing cold-start load time
+- `tsc` is now used for type-checking only (`noEmit: true`); it no longer emits JavaScript
+- Sourcemaps (`out/extension.js.map`) are always generated and ship inside the VSIX for full debuggability without obfuscation
+- `vscode:prepublish` now runs `type-check` before bundling to catch type errors at publish time
+- Integration tests compiled via esbuild (`--tests` flag) instead of `tsc`; fixes test runner on paths containing spaces on Windows
+- `tasks.json` updated to use the `$esbuild-watch` problem matcher (requires `connor4312.esbuild-problem-matchers` extension, added to workspace recommendations)
+- CI action `vscode-test` updated to use `npm run compile-tests` instead of a direct `tsc` invocation
+
+---
+
 ## [1.0.0] – 2026-03-20
 
 ### Added
