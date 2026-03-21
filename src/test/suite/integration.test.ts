@@ -36,6 +36,11 @@ suite('Bridge Integration', () => {
         assert.ok(result, 'Result should be defined');
         const categories = Object.keys(result);
         assert.ok(categories.length > 0, 'Result should contain at least one category');
+        console.log(`\n  Categories received: ${categories.length}`);
+        for (const category of categories) {
+            console.log(`    ${category}: ${result[category].length} image(s)`);
+        }
+        console.log('');
     });
 
     test('each category contains at least one image', () => {
