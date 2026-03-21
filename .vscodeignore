@@ -12,3 +12,4 @@ vite.config.ts
 **/.vscode-test.*
 AL-ActionImage-Viewer.ImageInformationProvider/**
 .github/**
+assets/meta/**
