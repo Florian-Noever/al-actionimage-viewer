@@ -12,8 +12,8 @@ runs:
       run: npm ci
       shell: bash
 
-    - name: Compile extension
-      run: npx tsc -p ./
+    - name: Compile extension and tests
+      run: npm run compile-tests
       shell: bash
 
     - name: Run integration tests
