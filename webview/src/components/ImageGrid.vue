@@ -6,7 +6,7 @@
         aria-label="Images"
         :aria-rowcount="totalRows"
         :aria-colcount="columns"
-        @wheel.ctrl.prevent="onCtrlWheel"
+        @wheel.prevent="onWheel"
         @contextmenu.prevent
         @keydown="onGridKeydown"
     >
@@ -221,8 +221,61 @@ watch(() => props.items, () => {
     scrollerRef.value?.scrollTo({ top: 0 });
 }, { flush: 'post' });
 
-function onCtrlWheel(e: WheelEvent): void {
-    emit('zoomStep', Math.sign(e.deltaY) > 0 ? -1 : 1);
+// Smooth scrolling
+let _scrollTarget = 0;
+let _scrollRAF: number | null = null;
+
+function onWheel(e: WheelEvent): void {
+    if (e.ctrlKey) {
+        emit('zoomStep', Math.sign(e.deltaY) > 0 ? -1 : 1);
+        return;
+    }
+
+    const scroller = scrollerRef.value;
+    if (!scroller) {
+        return;
+    }
+
+    if (_scrollRAF === null) {
+        _scrollTarget = scroller.scrollTop;
+    }
+
+    let delta = e.deltaY;
+    if (e.deltaMode === 1) { // DOM_DELTA_LINE
+        delta *= 40;
+    } else if (e.deltaMode === 2) { // DOM_DELTA_PAGE
+        delta *= scroller.clientHeight;
+    }
+
+    _scrollTarget = Math.max(
+        0,
+        Math.min(_scrollTarget + delta, scroller.scrollHeight - scroller.clientHeight)
+    );
+
+    if (_scrollRAF !== null) {
+        cancelAnimationFrame(_scrollRAF);
+    }
+    _scrollRAF = requestAnimationFrame(smoothScrollStep);
+}
+
+function smoothScrollStep(): void {
+    const scroller = scrollerRef.value;
+    if (!scroller) {
+        _scrollRAF = null;
+        return;
+    }
+
+    const current = scroller.scrollTop;
+    const diff = _scrollTarget - current;
+
+    if (Math.abs(diff) < 0.5) {
+        scroller.scrollTop = _scrollTarget;
+        _scrollRAF = null;
+        return;
+    }
+
+    scroller.scrollTop = current + diff * 0.25;
+    _scrollRAF = requestAnimationFrame(smoothScrollStep);
 }
 
 // ResizeObserver to track container width
@@ -239,6 +292,9 @@ onMounted(() => {
 onUnmounted(() => {
     if (anchorTimer) {
         clearTimeout(anchorTimer);
+    }
+    if (_scrollRAF !== null) {
+        cancelAnimationFrame(_scrollRAF);
     }
     ro?.disconnect();
 });
