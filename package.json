@@ -1,112 +1,112 @@
 {
-  "name": "al-actionimage-viewer",
-  "displayName": "AL ActionImage Viewer",
-  "description": "View, Search and Copy AL Action Images",
-  "version": "1.0.2",
-  "publisher": "Florian-Noever",
-  "license": "MIT",
-  "icon": "assets/icon.png",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Florian-Noever/al-actionimage-viewer"
-  },
-  "bugs": {
-    "url": "https://github.com/Florian-Noever/al-actionimage-viewer/issues"
-  },
-  "homepage": "https://github.com/Florian-Noever/al-actionimage-viewer",
-  "markdown": "github",
-  "qna": "github",
-  "keywords": [
-    "AL",
-    "Business Central",
-    "Dynamics 365",
-    "ActionImage",
-    "Actions",
-    "Icons",
-    "Viewer",
-    "AL Language"
-  ],
-  "engines": {
-    "vscode": "^1.105.0"
-  },
-  "categories": [
-    "Visualization",
-    "Other"
-  ],
-  "extensionKind": [
-    "ui"
-  ],
-  "extensionDependencies": [
-    "ms-dynamics-smb.al"
-  ],
-  "activationEvents": [],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "al-actionimage-viewer.open",
-        "title": "AL ActionImage Viewer"
-      }
-    ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "al-actionimage-viewer",
-          "title": "AL ActionImage Viewer",
-          "icon": "assets/icon2.svg"
-        }
-      ]
+    "name": "al-actionimage-viewer",
+    "displayName": "AL ActionImage Viewer",
+    "description": "View, Search and Copy AL Action Images",
+    "version": "1.0.2",
+    "publisher": "Florian-Noever",
+    "license": "MIT",
+    "icon": "assets/icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Florian-Noever/al-actionimage-viewer"
     },
-    "views": {
-      "al-actionimage-viewer": [
-        {
-          "id": "al-actionimage-viewer.sidebar",
-          "name": "Images",
-          "type": "webview",
-          "icon": "assets/icon2.svg"
+    "bugs": {
+        "url": "https://github.com/Florian-Noever/al-actionimage-viewer/issues"
+    },
+    "homepage": "https://github.com/Florian-Noever/al-actionimage-viewer",
+    "markdown": "github",
+    "qna": "github",
+    "keywords": [
+        "AL",
+        "Business Central",
+        "Dynamics 365",
+        "ActionImage",
+        "Actions",
+        "Icons",
+        "Viewer",
+        "AL Language"
+    ],
+    "engines": {
+        "vscode": "^1.105.0"
+    },
+    "categories": [
+        "Visualization",
+        "Other"
+    ],
+    "extensionKind": [
+        "ui"
+    ],
+    "extensionDependencies": [
+        "ms-dynamics-smb.al"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "al-actionimage-viewer.open",
+                "title": "AL ActionImage Viewer"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "al-actionimage-viewer",
+                    "title": "AL ActionImage Viewer",
+                    "icon": "assets/icon2.svg"
+                }
+            ]
+        },
+        "views": {
+            "al-actionimage-viewer": [
+                {
+                    "id": "al-actionimage-viewer.sidebar",
+                    "name": "Images",
+                    "type": "webview",
+                    "icon": "assets/icon2.svg"
+                }
+            ]
         }
-      ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "npm run check-types && npm run lint && node esbuild.mjs && npm run build:webview",
+        "build:webview": "vite build",
+        "dev:webview": "vite --open",
+        "watch": "npm-run-all -p watch:*",
+        "watch:esbuild": "node esbuild.mjs --watch",
+        "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+        "package": "npx -y @vscode/vsce package",
+        "compile-tests": "node esbuild.mjs --tests",
+        "watch-tests": "node esbuild.mjs --tests",
+        "pretest": "npm run check-types && npm run compile-tests",
+        "check-types": "tsc --noEmit",
+        "lint": "eslint src",
+        "test": "node ./out/test/runTests.js",
+        "publish:bridge": "cd AL-ActionImage-Viewer.ImageInformationProvider && publish.bat"
+    },
+    "devDependencies": {
+        "@tanstack/vue-virtual": "^3.13.19",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "25.x",
+        "@types/vscode": "^1.105.0",
+        "@typescript-eslint/eslint-plugin": "^8.56.1",
+        "@typescript-eslint/parser": "^8.56.1",
+        "@vitejs/plugin-vue": "^6.0.4",
+        "@vscode/test-cli": "^0.0.12",
+        "@vscode/test-electron": "^2.5.2",
+        "@vue/tsconfig": "^0.9.0",
+        "esbuild": "^0.27.4",
+        "eslint": "^10.0.2",
+        "eslint-plugin-vue": "^10.8.0",
+        "mocha": "^11.1.0",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1",
+        "vue": "^3.5.29",
+        "npm-run-all": "^4.1.5"
+    },
+    "dependencies": {
+        "@vueuse/core": "^14.2.1",
+        "floating-vue": "^5.2.2"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "npm run check-types && npm run lint && node esbuild.mjs && npm run build:webview",
-    "build:webview": "vite build",
-    "dev:webview": "vite --open",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.mjs --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npx -y @vscode/vsce package",
-    "compile-tests": "node esbuild.mjs --tests",
-    "watch-tests": "node esbuild.mjs --tests",
-    "pretest": "npm run check-types && npm run compile-tests",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "test": "node ./out/test/runTests.js",
-    "publish:bridge": "cd AL-ActionImage-Viewer.ImageInformationProvider && publish.bat"
-  },
-  "devDependencies": {
-    "@tanstack/vue-virtual": "^3.13.19",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "25.x",
-    "@types/vscode": "^1.105.0",
-    "@typescript-eslint/eslint-plugin": "^8.56.1",
-    "@typescript-eslint/parser": "^8.56.1",
-    "@vitejs/plugin-vue": "^6.0.4",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "@vue/tsconfig": "^0.9.0",
-    "esbuild": "^0.27.4",
-    "eslint": "^10.0.2",
-    "eslint-plugin-vue": "^10.8.0",
-    "mocha": "^11.1.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vue": "^3.5.29",
-    "npm-run-all": "^4.1.5"
-  },
-  "dependencies": {
-    "@vueuse/core": "^14.2.1",
-    "floating-vue": "^5.2.2"
-  }
 }
