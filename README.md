@@ -1,8 +1,8 @@
-# <img src="https://raw.githubusercontent.com/Florian-Noever/al-actionimage-viewer/refs/heads/main/assets/icon.png" height="30"> AL ActionImage Viewer
+# <img src="./assets/icon.png" alt="" height="26"> AL ActionImage Viewer
 
 Browse, search, copy, and export AL Action Images loaded directly from the [AL Language extension for Microsoft Dynamics 365 Business Central](https://marketplace.visualstudio.com/items?itemName=ms-dynamics-smb.al). Images are organised by category, fully searchable, and zoomable. The viewer is available both as a full editor panel and as an always-visible activity bar sidebar.
 
-![Example Image](./assets/example.png)
+![Example Image](./assets/meta/example.png)
 
 ---
 
@@ -126,3 +126,8 @@ Press `Ctrl+Shift+D` (or `Cmd+Shift+D`) inside the webview to toggle a debug bor
 ## 📜 License
 
 Licensed under the [MIT License](./LICENSE).
+
+<br>
+<br>
+
+[!["Buy me a coffee"](./assets/meta/orange-button-x180.png)](https://www.buymeacoffee.com/florian_noever)
