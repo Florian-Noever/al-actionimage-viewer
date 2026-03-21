@@ -4,6 +4,14 @@ All notable changes to **AL ActionImage Viewer** are documented in this file.
 
 ---
 
+## [1.0.2] – 2026-03-21
+
+### Changed
+
+- Mouse-wheel scrolling in the image grid is now smooth: wheel input is intercepted and animated with an eased `requestAnimationFrame` loop instead of snapping in discrete browser-native steps
+
+---
+
 ## [1.0.1] – 2026-03-21
 
 ### Changed
