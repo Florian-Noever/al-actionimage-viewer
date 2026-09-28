@@ -29,6 +29,4 @@ jobs:
         bin/linux/AL-ActionImage-Viewer.ImageInformationProvider
         bin/darwin/AL-ActionImage-Viewer.ImageInformationProvider
       vs-marketplace: true
-      azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
-      azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
       # open-vsx stays off: Open VSX refuses the extension while ms-dynamics-smb.al is not there
