@@ -48,7 +48,11 @@ export function getNavCodeAnalysisDllPath(): string | undefined {
     if (!alExt) {
         return;
     }
-    return path.join(alExt.extensionPath, 'bin', platformFolder(), NAV_CODE_ANALYSIS_DLL);
+    // AL 18+ ships the DLL directly in bin/, older versions in bin/<platform>/
+    const binPath = path.join(alExt.extensionPath, 'bin');
+    return [binPath, path.join(binPath, platformFolder())]
+        .map(folder => path.join(folder, NAV_CODE_ANALYSIS_DLL))
+        .find(dllPath => fs.existsSync(dllPath));
 }
 
 export async function getImageInformations(context: vscode.ExtensionContext): Promise<Record<string, ImageInformationDTO[]>> {
