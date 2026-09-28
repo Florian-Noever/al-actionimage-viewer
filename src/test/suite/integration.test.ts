@@ -23,13 +23,10 @@ suite('Bridge Integration', () => {
 
         // Pass the DLL path explicitly via --dll-path so the bridge uses the AL
         // extension installed in the test profile
-        const args: string[] = [];
         const dllPath = getNavCodeAnalysisDllPath();
-        if (dllPath && fs.existsSync(dllPath)) {
-            args.push('--dll-path', dllPath);
-        }
+        assert.ok(dllPath, 'AL Language extension DLL not found in the test profile');
 
-        result = await readFromBridgeStdout(binaryPath, args);
+        result = await readFromBridgeStdout(binaryPath, ['--dll-path', dllPath]);
     });
 
     test('result is a non-empty object', () => {

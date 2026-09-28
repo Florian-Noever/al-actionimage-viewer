@@ -65,7 +65,9 @@ public static class NAVImageInformationProvider
         if (!Directory.Exists(vscodeExtensionsFolder))
             return null;
         var extensions = Directory.GetDirectories(vscodeExtensionsFolder);
-        var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId)) ?? string.Empty;
+        var alExtensionPath = extensions.FirstOrDefault(extension => Path.GetFileName(extension).StartsWith(ALExtensionId, StringComparison.OrdinalIgnoreCase));
+        if (alExtensionPath is null)
+            return null;
         var codeAnalysisDll = Directory.EnumerateFiles(alExtensionPath, NavTypeHelper.FullNavCodeAnalysisDllName, SearchOption.AllDirectories).FirstOrDefault();
         return File.Exists(codeAnalysisDll) ? codeAnalysisDll : null;
     }
