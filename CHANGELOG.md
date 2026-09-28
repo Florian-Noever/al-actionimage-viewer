@@ -4,6 +4,20 @@ All notable changes to **AL ActionImage Viewer** are documented in this file.
 
 ---
 
+## [1.0.3] – 2026-09-28
+
+### Fixed
+
+- No images were shown with AL Language 18: the extension now finds `Microsoft.Dynamics.Nav.CodeAnalysis.dll` directly in the AL extension's `bin/` folder as well as in the older `bin/<platform>/` layout
+- The bridge no longer fails when `~/.vscode/extensions` contains no AL Language extension
+
+### Changed
+
+- CI and releases now use the shared workflows of `Florian-Noever/Florian-Noever`: every push runs the unit and integration tests and packs a preview VSIX, and a published release is built and tested from its tag, attached to the GitHub release with a build attestation and published to the Visual Studio Marketplace through Microsoft Entra ID instead of a personal access token
+- Local integration test runs on Windows now use `.vscode-test/` even when the project path contains spaces
+
+---
+
 ## [1.0.2] – 2026-03-21
 
 ### Changed
