@@ -37,11 +37,11 @@ It writes the result as a **custom binary payload to stdout**, then exits.
 | `Data/ImageInformationDTO.cs` | `ImageInformationDTO` record: `Name`, `Category`, `Tags[]`, `ImageDataUrl` |
 
 ### AL Extension DLL Location
-The DLL is discovered at runtime via the VS Code Extension API (`vscode.extensions.getExtension`) by the TypeScript extension, which then passes the path to the C# binary as a `--dll-path` argument. If not provided, the C# binary auto-discovers it:
+The DLL is discovered at runtime via the VS Code Extension API (`vscode.extensions.getExtension`) by the TypeScript extension, which then passes the path to the C# binary as a `--dll-path` argument. `getNavCodeAnalysisDllPath()` probes `<AL>/bin/` (AL 18+) and then `<AL>/bin/<platform>/` (older versions). If neither contains the DLL, no `--dll-path` is passed and the C# binary searches the AL extension folder recursively:
 ```
-~/.vscode/extensions/ms-dynamics-smb.al<version>/bin/<platform>/Microsoft.Dynamics.Nav.CodeAnalysis.dll
+~/.vscode/extensions/ms-dynamics-smb.al-<version>/**/Microsoft.Dynamics.Nav.CodeAnalysis.dll
 ```
-Only `win32` / `linux` / `darwin` sub-folders are probed. The extension requirement `extensionKind: ["ui"]` guarantees it always runs on the local machine.
+The extension requirement `extensionKind: ["ui"]` guarantees it always runs on the local machine.
 
 ### Reflection Strategy
 The provider discovers *all* `static` methods on `Microsoft.Dynamics.Nav.CodeAnalysis.ImageResources` that return `IDictionary<string, string>` and take no parameters. Each such method maps to one image category (e.g. `ActionImage`, `FieldCueGroupImage`). The category name is derived from the method name by stripping `Get`/`Resource` affixes.
@@ -67,12 +67,11 @@ The C# writer and TypeScript `BinaryReader` must mirror each other **exactly**:
 All integers are **little-endian int32**.
 
 ### Build & Publish
-Pre-built binaries are committed to `bin/{win32,linux,darwin}/`. Publish profiles live under `Properties/PublishProfiles/`. To republish:
+The binaries are not committed (`bin/` is gitignored). Publish profiles live under `Properties/PublishProfiles/`, and the csproj's `CopyToExtensionBin` target copies each published executable to `bin/<platform>/`. To publish all three locally (Windows):
 ```bash
-dotnet publish -c Release /p:PublishProfile=win32
-dotnet publish -c Release /p:PublishProfile=linux
-dotnet publish -c Release /p:PublishProfile=darwin
+npm run publish:bridge   # publish.bat: dotnet publish -c Release /p:PublishProfile=win32|linux|darwin
 ```
+CI publishes the same profiles itself (see [CI & Releases](#ci--releases)).
 
 ---
 
@@ -132,13 +131,14 @@ All extension → webview messages are wrapped as `{ type, payload }`.
 
 ### Build
 ```bash
-npm run compile          # type-check + lint + esbuild extension + vite webview
+npm run compile          # check-types + lint + esbuild extension + vite webview
 npm run watch            # parallel: esbuild --watch + tsc --noEmit --watch
 npm run compile-tests    # esbuild all test entry points into out/test/
 npm run build:webview    # vite build webview to public/
-npm run type-check       # tsc --noEmit only (no emit)
-npm run package          # vsce package (.vsix) — runs vscode:prepublish first
-npm run test             # compile-tests + compile + lint, then node ./out/test/runTests.js
+npm run check-types      # tsc --noEmit only (no emit)
+npm run publish:bridge   # publish the C# bridge for win32/linux/darwin into bin/ (Windows)
+npm run package          # vsce package (.vsix) — runs vscode:prepublish first; publish the bridge before
+npm run test             # pretest (check-types + compile-tests), then node ./out/test/runTests.js
 ```
 
 ### Bundler (`esbuild.mjs`)
@@ -256,6 +256,22 @@ App.vue mounts
             → useImageData.onDataMessage() stores data
               → CategoryRail populates, ImageGrid renders
 ```
+
+---
+
+## CI & Releases
+
+The pipelines are the shared workflows of `Florian-Noever/Florian-Noever` (documented in its `.github/CI.md`); this repository only holds the two callers:
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| `.github/workflows/ci.yml` | push, pull request | `dotnet test` on the bridge solution; publishes the bridge with all three profiles and runs the integration tests under xvfb; packs a preview VSIX that must contain all three bridge binaries |
+| `.github/workflows/publish.yml` | release published | Builds and tests the release tag the same way, attaches the VSIX to the GitHub release with a build attestation, then publishes it to the VS Marketplace through Microsoft Entra ID (environment `vs-marketplace`, repository variables `AZURE_CLIENT_ID` / `AZURE_TENANT_ID`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
+
+To release:
+1. `npm version x.y.z --no-git-tag-version` — bumps `package.json` and `package-lock.json` together; the pipeline fails if they differ or don't match the tag
+2. Add the CHANGELOG entry and push
+3. Publish a GitHub release `vx.y.z` from a commit whose CI is green; a pre-release only gets the VSIX on GitHub
 
 ---
 
