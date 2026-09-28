@@ -266,7 +266,7 @@ The pipelines are the shared workflows of `Florian-Noever/Florian-Noever` (docum
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
 | `.github/workflows/ci.yml` | push, pull request | `dotnet test` on the bridge solution; publishes the bridge with all three profiles and runs the integration tests under xvfb; packs a preview VSIX that must contain all three bridge binaries |
-| `.github/workflows/publish.yml` | release published | Builds and tests the release tag the same way, attaches the VSIX to the GitHub release with a build attestation, then publishes it to the VS Marketplace through Microsoft Entra ID (environment `vs-marketplace`, repository variables `AZURE_CLIENT_ID` / `AZURE_TENANT_ID`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
+| `.github/workflows/publish.yml` | release published | Builds and tests the release tag the same way, attaches the VSIX to the GitHub release with a build attestation, then publishes it to the VS Marketplace through Microsoft Entra ID (the account's shared app registration; environment `vs-marketplace`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
 
 To release:
 1. `npm version x.y.z --no-git-tag-version` — bumps `package.json` and `package-lock.json` together; the pipeline fails if they differ or don't match the tag
