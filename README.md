@@ -1,4 +1,4 @@
-# <img src="./assets/icon.png" alt="" height="26"> AL ActionImage Viewer
+# <img src="./assets/icon.svg" alt="" height="32"> AL ActionImage Viewer
 
 Browse, search, copy, and export AL Action Images loaded directly from the [AL Language extension for Microsoft Dynamics 365 Business Central](https://marketplace.visualstudio.com/items?itemName=ms-dynamics-smb.al). Images are organised by category, fully searchable, and zoomable. The viewer is available both as a full editor panel and as an always-visible activity bar sidebar.
 
@@ -134,4 +134,4 @@ Licensed under the [MIT License](./LICENSE).
 <br>
 <br>
 
-[!["Buy me a coffee"](./assets/meta/orange-button-x180.png)](https://www.buymeacoffee.com/florian_noever)
+[!["Buy me a coffee"](https://raw.githubusercontent.com/Florian-Noever/Florian-Noever/refs/heads/main/_meta/BuyMeACoffee/Buttons%20%26%20Icons/orange-button-x180.png)](https://www.buymeacoffee.com/florian_noever)
