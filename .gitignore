@@ -394,3 +394,4 @@ node_modules
 
 # VS
 AL-ActionImage-Viewer.ImageInformationProvider/**/Resources/*.dll
+*.lscache
