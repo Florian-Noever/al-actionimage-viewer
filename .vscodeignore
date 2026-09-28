@@ -14,4 +14,7 @@ vsc-extension-quickstart.md
 webview/**
 AL-ActionImage-Viewer.ImageInformationProvider/**
 .github/**
+.claude/**
+CLAUDE.md
+artifacts/**
 assets/meta/**
