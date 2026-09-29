@@ -13,15 +13,24 @@ permissions:
   contents: read
 
 jobs:
-  ci:
-    uses: Florian-Noever/Florian-Noever/.github/workflows/vscode-extension-ci.yml@v1
+  bridge:
+    uses: Florian-Noever/Florian-Noever/.github/workflows/dotnet-ci.yml@v1
     with:
-      dotnet-project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
-      dotnet-publish-profiles: |
+      test-project: AL-ActionImage-Viewer.ImageInformationProvider
+      publish-project: AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider/AL-ActionImage-Viewer.ImageInformationProvider.csproj
+      publish-profiles: |
         win32
         linux
         darwin
-      dotnet-test-project: AL-ActionImage-Viewer.ImageInformationProvider
+      artifact-name: bridge
+      artifact-path: bin
+
+  extension:
+    needs: bridge
+    uses: Florian-Noever/Florian-Noever/.github/workflows/vscode-extension-ci.yml@v1
+    with:
+      artifact-name: bridge
+      artifact-path: bin
       test-command: npm test
       required-files: |
         bin/win32/AL-ActionImage-Viewer.ImageInformationProvider.exe
