@@ -67,11 +67,12 @@ The C# writer and TypeScript `BinaryReader` must mirror each other **exactly**:
 All integers are **little-endian int32**.
 
 ### Build & Publish
-The binaries are not committed (`bin/` is gitignored). Publish profiles live under `Properties/PublishProfiles/`, and the csproj's `CopyToExtensionBin` target copies each published executable to `bin/<platform>/`. To publish all three locally (Windows):
+The binaries are not committed (`bin/` is gitignored). Publish profiles live under `Properties/PublishProfiles/`, and the csproj's `CopyToExtensionBin` target copies each published executable to `bin/<platform>/`. To publish them locally (PowerShell 7, `pwsh`, on any OS):
 ```bash
-npm run publish:bridge   # publish.bat: dotnet publish -c Release /p:PublishProfile=win32|linux|darwin
+npm run publish:bridge                           # publish.ps1: dotnet publish -c Release -p:PublishProfile=win32|linux|darwin
+npm run publish:bridge -- -PublishProfile linux  # a single profile
 ```
-CI publishes the same profiles itself (see [CI & Releases](#ci--releases)).
+`npm run package` runs it first through its `prepackage` hook. CI publishes the same profiles itself (see [CI & Releases](#ci--releases)).
 
 ---
 
@@ -136,9 +137,9 @@ npm run watch            # parallel: esbuild --watch + tsc --noEmit --watch
 npm run compile-tests    # esbuild all test entry points into out/test/
 npm run build:webview    # vite build webview to public/
 npm run check-types      # tsc --noEmit only (no emit)
-npm run publish:bridge   # publish the C# bridge for win32/linux/darwin into bin/ (Windows)
-npm run package          # vsce package (.vsix) — runs vscode:prepublish first; publish the bridge before
-npm run test             # pretest (check-types + compile-tests), then node ./out/test/runTests.js
+npm run publish:bridge   # publish the C# bridge for win32/linux/darwin into bin/ (publish.ps1, needs pwsh)
+npm run package          # prepackage publishes the bridge, then vsce package (.vsix), which runs vscode:prepublish
+npm run test             # pretest (check-types + compile-tests), then node ./out/test/runTests.js; needs the bridge in bin/
 ```
 
 ### Bundler (`esbuild.mjs`)
@@ -265,8 +266,8 @@ The pipelines are the shared workflows of `Florian-Noever/Florian-Noever` (docum
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/ci.yml` | push, pull request | `dotnet test` on the bridge solution; publishes the bridge with all three profiles and runs the integration tests under xvfb; packs a preview VSIX that must contain all three bridge binaries |
-| `.github/workflows/publish.yml` | release published | Builds and tests the release tag the same way, attaches the VSIX to the GitHub release with a build attestation, then publishes it to the VS Marketplace through Microsoft Entra ID (the account's shared app registration; environment `vs-marketplace`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
+| `.github/workflows/ci.yml` | push, pull request | Job `bridge` (`dotnet-ci.yml`): `dotnet test` on the bridge solution, then publishes the bridge with all three profiles into the artifact `bridge`. Job `extension` (`vscode-extension-ci.yml`): downloads that artifact into `bin/`, runs the integration tests under xvfb and packs a preview VSIX that must contain all three bridge binaries |
+| `.github/workflows/publish.yml` | release published | The same two jobs from the release tag, with the release version stamped into the bridge; then attaches the VSIX to the GitHub release with a build attestation and publishes it to the VS Marketplace through Microsoft Entra ID (the account's shared app registration; environment `vs-marketplace`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
 
 To release:
 1. `npm version x.y.z --no-git-tag-version` — bumps `package.json` and `package-lock.json` together; the pipeline fails if they differ or don't match the tag

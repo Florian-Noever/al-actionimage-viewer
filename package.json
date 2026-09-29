@@ -76,6 +76,7 @@
         "watch": "npm-run-all -p watch:*",
         "watch:esbuild": "node esbuild.mjs --watch",
         "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+        "prepackage": "npm run publish:bridge",
         "package": "npx -y @vscode/vsce package",
         "compile-tests": "node esbuild.mjs --tests",
         "watch-tests": "node esbuild.mjs --tests",
@@ -83,7 +84,7 @@
         "check-types": "tsc --noEmit",
         "lint": "eslint src",
         "test": "node ./out/test/runTests.js",
-        "publish:bridge": "cd AL-ActionImage-Viewer.ImageInformationProvider && publish.bat"
+        "publish:bridge": "pwsh -NoProfile -File AL-ActionImage-Viewer.ImageInformationProvider/publish.ps1"
     },
     "devDependencies": {
         "@tanstack/vue-virtual": "^3.13.19",

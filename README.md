@@ -106,18 +106,18 @@ npm run build:webview
 # Compile extension in watch mode (default build task)
 npm run watch
 
-# Publish the C# bridge binary for all platforms into bin/ (Windows)
+# Publish the C# bridge binary for all platforms into bin/ (needs PowerShell 7)
 npm run publish:bridge
 
-# Package the extension as a .vsix (publish the bridge first)
+# Package the extension as a .vsix (publishes the bridge first)
 npm run package
 ```
 
-The bridge binaries for `win32`, `linux` and `darwin` are not committed: `npm run publish:bridge` builds them into `bin/` locally, and CI builds them from the same publish profiles.
+The bridge binaries for `win32`, `linux` and `darwin` are not committed: `npm run publish:bridge` builds them into `bin/` locally, `npm run package` runs it before packaging, and CI builds them from the same publish profiles.
 
 ### CI & Releases
 
-CI runs on every push and pull request through the shared workflows of [Florian-Noever/Florian-Noever](https://github.com/Florian-Noever/Florian-Noever/blob/main/.github/CI.md). It runs the bridge's unit tests, builds the bridge for all three platforms, runs the integration tests and packs a preview VSIX.
+CI runs on every push and pull request through the shared workflows of [Florian-Noever/Florian-Noever](https://github.com/Florian-Noever/Florian-Noever/blob/main/.github/CI.md). One job runs the bridge's unit tests and builds the bridge for all three platforms; a second one takes those binaries, runs the integration tests and packs a preview VSIX.
 
 To release, bump the version with `npm version x.y.z --no-git-tag-version`, add a CHANGELOG entry, and publish a GitHub release `vx.y.z` from a commit whose CI is green. The publish workflow builds and tests the tag, attaches the VSIX to the release and publishes it to the Visual Studio Marketplace.
 
