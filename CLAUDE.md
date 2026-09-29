@@ -266,8 +266,10 @@ The pipelines are the shared workflows of `Florian-Noever/Florian-Noever` (docum
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/ci.yml` | push, pull request | Job `bridge` (`dotnet-ci.yml`): `dotnet test` on the bridge solution, then publishes the bridge with all three profiles into the artifact `bridge`. Job `extension` (`vscode-extension-ci.yml`): downloads that artifact into `bin/`, runs the integration tests under xvfb and packs a preview VSIX that must contain all three bridge binaries |
+| `.github/workflows/ci.yml` | push, pull request | Job `bridge` (`dotnet-ci.yml`): `dotnet test` on the bridge solution, then publishes the bridge with all three profiles into the artifact `bridge`. Job `extension` (`vscode-extension-ci.yml`): downloads that artifact into `bin/`, runs the integration tests under xvfb and packs a preview VSIX that must contain all three bridge binaries. Job `automerge` (`dependabot-automerge.yml`): squash-merges a Dependabot pull request once both passed |
 | `.github/workflows/publish.yml` | release published | The same two jobs from the release tag, with the release version stamped into the bridge; then attaches the VSIX to the GitHub release with a build attestation and publishes it to the VS Marketplace through Microsoft Entra ID (the account's shared app registration; environment `vs-marketplace`). Open VSX stays off because `ms-dynamics-smb.al` is not on Open VSX |
+
+Dependabot (`.github/dependabot.yml`) opens weekly pull requests for npm, NuGet and GitHub Actions, grouping minor and patch updates; the `automerge` job merges them once CI is green. `@types/vscode` is ignored because it must not be newer than `engines.vscode`, so bump both together by hand.
 
 To release:
 1. `npm version x.y.z --no-git-tag-version` — bumps `package.json` and `package-lock.json` together; the pipeline fails if they differ or don't match the tag

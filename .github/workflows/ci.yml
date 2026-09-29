@@ -36,3 +36,10 @@ jobs:
         bin/win32/AL-ActionImage-Viewer.ImageInformationProvider.exe
         bin/linux/AL-ActionImage-Viewer.ImageInformationProvider
         bin/darwin/AL-ActionImage-Viewer.ImageInformationProvider
+
+  automerge:
+    needs: [bridge, extension]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Florian-Noever/Florian-Noever/.github/workflows/dependabot-automerge.yml@v1
