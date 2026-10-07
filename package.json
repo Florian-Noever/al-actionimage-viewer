@@ -18,13 +18,13 @@
     "qna": "github",
     "keywords": [
         "AL",
+        "AL Language",
         "Business Central",
         "Dynamics 365",
         "ActionImage",
         "Actions",
         "Icons",
-        "Viewer",
-        "AL Language"
+        "Viewer"
     ],
     "engines": {
         "vscode": "^1.105.0"
