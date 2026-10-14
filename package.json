@@ -5,7 +5,7 @@
     "version": "1.0.3",
     "publisher": "Florian-Noever",
     "license": "MIT",
-    "icon": "assets/icon.png",
+    "icon": "assets/icon-x512.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/Florian-Noever/al-actionimage-viewer"
